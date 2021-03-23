@@ -1,0 +1,36 @@
+### Starting build.
+# Target: evolution.ml.depends, tags: { extension:ml, file:evolution.ml, ocaml, ocamldep, quiet }
+ocamlfind ocamldep -modules evolution.ml > evolution.ml.depends
+# Target: evolution.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:evolution.cmo, file:evolution.ml, implem, ocaml, quiet }
+ocamlfind ocamlc -c -o evolution.cmo evolution.ml
++ ocamlfind ocamlc -c -o evolution.cmo evolution.ml
+File "evolution.ml", lines 44-48, characters 47-3:
+44 | ...............................................struct
+45 | 
+46 | 
+47 | 
+48 | end
+Error: Signature mismatch:
+       Modules do not match: sig end is not included in Evolution1D
+       The value `evolve' is required but not provided
+       File "evolution.ml", line 40, characters 2-36: Expected declaration
+       The value `step' is required but not provided
+       File "evolution.ml", line 33, characters 2-19: Expected declaration
+       The value `probabilites' is required but not provided
+       File "evolution.ml", line 29, characters 2-36: Expected declaration
+       The value `to_list' is required but not provided
+       File "evolution.ml", line 24, characters 2-35: Expected declaration
+       The value `from_list' is required but not provided
+       File "evolution.ml", line 20, characters 2-38: Expected declaration
+       The value `normalize' is required but not provided
+       File "evolution.ml", line 16, characters 2-50: Expected declaration
+       The value `tau' is required but not provided
+       File "evolution.ml", line 12, characters 2-15: Expected declaration
+       The value `domain' is required but not provided
+       File "evolution.ml", line 9, characters 2-28: Expected declaration
+       The type `boundary_condition' is required but not provided
+       File "evolution.ml", line 6, characters 2-25: Expected declaration
+       The type `t' is required but not provided
+       File "evolution.ml", line 4, characters 2-8: Expected declaration
+Command exited with code 2.
+# Compilation unsuccessful.
