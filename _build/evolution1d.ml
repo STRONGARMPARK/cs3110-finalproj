@@ -144,9 +144,6 @@ module FreeParticleEvolutionSpectral = struct
     |> List.map2 Complex.mul w
 
   let evolve w tau b d time print =
-    step w time b d
+    step w tau b d
     (*TODO: Implement printing *)
 end
-
-module FreeParticleEvolutionEulers = struct
-  (** AF: t represents the wave function as a vector *)

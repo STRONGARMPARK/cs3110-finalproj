@@ -1,4 +1,4 @@
-MODULES=evolution
+MODULES=evolution1d
 OBJECTS=$(MODULES:=.cmo)
 MLS=$(MODULES:=.ml)
 #MLIS=$(MODULES:=.mli)
