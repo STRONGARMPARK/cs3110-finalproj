@@ -151,7 +151,7 @@ module FreeParticleEvolutionSpectral : Evolution1D = struct
     (*TODO: Implement printing *)
 end
 
-module FreeParticleEvolutionEulers : Evolution1D = struct
+module FreeParticleEvolutionEulers = struct
   (** AF: t represents the wave function as an array of complex numbers,
     the wave function evaluated at each point in the discretized domain. 
     In other words, if w : t, then w.(i) is the evaluation of w at the
@@ -205,9 +205,21 @@ module FreeParticleEvolutionEulers : Evolution1D = struct
     |> (Array.map2 Complex.add) w
 
   
+  let step_mutate w tau b d n = 
+    let wxx = second_derivative w b d n in
+    for i = 0 to n - 1 do 
+      w.(i) <- 
+        Complex.add (Complex.mul {re = 0.;im = tau /. 2.} wxx.(i)) w.(i);
+    done
+
   let evolve w tau b d time print = 
-    failwith "Unimplemented"
-
-  let evolve w tau b d time print = failwith "Unimplemented"
-
+    let n = Array.length w in
+    let wnew = Array.copy w in
+    let steps = Float.to_int (Float.ceil (time /. tau)) in
+    for i = 0 to steps do
+      (*TODO: Implement printing*)
+      step_mutate wnew tau b d n;
+    done;
+    
+    wnew
 end
