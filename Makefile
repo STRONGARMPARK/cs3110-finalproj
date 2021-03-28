@@ -3,7 +3,7 @@ OBJECTS=$(MODULES:=.cmo)
 MLS=$(MODULES:=.ml)
 #MLIS=$(MODULES:=.mli)
 #TEST=test.byte
-#MAIN=main.byte
+MAIN=testing-graphs.byte
 OCAMLBUILD=ocamlbuild -use-ocamlfind
 
 default: build
