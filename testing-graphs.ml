@@ -3,7 +3,7 @@ open Graphics
 ;;
 open_graph " 480x270"
 
-(* poopy *)
+(* armstrong is dummy thicc *)
 
 let xr = (size_x () / 2) - 30
 
