@@ -1,7 +1,7 @@
 open Graphics
 
 ;;
-open_graph " 480x270"
+open_graph ":0 300x300"
 
 (* armstrong is dummy thicc *)
 
