@@ -1,0 +1,6 @@
+### Starting build.
+# Target: evolution1d.ml.depends, tags: { extension:ml, file:evolution1d.ml, ocaml, ocamldep, quiet }
+ocamlfind ocamldep -modules evolution1d.ml > evolution1d.ml.depends
+# Target: evolution1d.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:evolution1d.cmo, file:evolution1d.ml, implem, ocaml, quiet }
+ocamlfind ocamlc -c -o evolution1d.cmo evolution1d.ml
+# Compilation successful.
