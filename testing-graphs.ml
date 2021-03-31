@@ -1,11 +1,10 @@
-
 open Graphics
 ;;
-let _ = open_graph " 600x400"
+let _ = open_graph " 1000x1000"
 
-let sx = 10 
+let sx = 20 
 
-let sy = 10 
+let sy = 20
 
 let point x y =
   let _ = set_color black in 
@@ -47,6 +46,18 @@ let plot_func f =
 
 let _ = axis opx opy
 
-let _ = plot_func (fun x -> sin (x))
+let i = ref 0.0;
 
-let _ = wait_next_event [ Key_pressed ]
+(* let _ = plot_func (fun x -> sin (x)) *)
+;;
+try
+  while true do
+    i := !i +. 0.1;
+    remember_mode false;
+    let st = wait_next_event [Key_pressed ] in
+    synchronize ();
+    let mx = st.mouse_x + 5 and my = st.mouse_y + 5 in
+    plot_func (fun x -> sin (x +. !i));
+    point mx my
+  done
+with Exit -> ()
