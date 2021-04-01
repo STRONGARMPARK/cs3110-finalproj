@@ -41,5 +41,5 @@ function "open_graph" provided by the graphics module. What we have in there
 to begin with is open_graph " 1000x1000" which opens a window with those 
 dimensions. To fix the detection problem, you need to type: open_graph 
 " {insert display name here}". Once you do that and it actually recognizes 
-the display you can revert back tot he old open_graph command to 
+the display you can revert back to the old open_graph command to 
 open_graph " 1000x1000" and it should give you our graph as intended. 

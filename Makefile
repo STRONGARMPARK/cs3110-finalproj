@@ -19,7 +19,7 @@ graph:
 	$(OCAMLBUILD) -tag 'debug' $(MAIN) && OCAMLRUNPARAM=b ./$(MAIN)
 
 zip:
-	zip schrodinger.zip *.ml* *.txt* *.json *.sh _tags .merlin .ocamlformat Makefile	
+	zip schrodinger.zip *.ml* *.txt* _tags .merlin .ocamlformat Makefile	
 
 clean:
 	ocamlbuild -clean
