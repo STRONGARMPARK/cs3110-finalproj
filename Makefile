@@ -3,7 +3,7 @@ OBJECTS=$(MODULES:=.cmo)
 MLS=$(MODULES:=.ml)
 #MLIS=$(MODULES:=.mli)
 #TEST=test.byte
-MAIN=testing-graphs.byte
+MAIN=graphs.byte
 OCAMLBUILD=ocamlbuild -use-ocamlfind
 
 default: build
@@ -19,8 +19,8 @@ graph:
 	$(OCAMLBUILD) -tag 'debug' $(MAIN) && OCAMLRUNPARAM=b ./$(MAIN)
 
 zip:
-	zip adventure.zip *.ml* *.json *.sh _tags .merlin .ocamlformat .ocamlinit LICENSE Makefile	
+	zip schrodinger.zip *.ml* *.txt* *.json *.sh _tags .merlin .ocamlformat Makefile	
 
 clean:
 	ocamlbuild -clean
-	rm -rf _doc.public _doc.private adventure.zip
+	rm -rf _doc.public _doc.private schrodinger.zip

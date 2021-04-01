@@ -48,13 +48,12 @@ let _ = axis opx opy
 
 let i = ref 0.0;
 
-(* let _ = plot_func (fun x -> sin (x)) *)
 ;;
 try
   while true do
     i := !i +. 0.1;
     remember_mode false;
-    let st = wait_next_event [Key_pressed ] in
+    let st = wait_next_event [Key_pressed] in
     synchronize ();
     let mx = st.mouse_x + 5 and my = st.mouse_y + 5 in
     plot_func (fun x -> sin (x +. !i));

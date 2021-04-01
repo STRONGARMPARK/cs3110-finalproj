@@ -1,0 +1,45 @@
+(FOR GUI)
+1. You need to have the graphics package installed on your system through opam.
+
+Run "opam install graphics" in the terminal and you should be good to go. 
+
+2. To actually run the GUI, and what we have so far, you can type in the 
+command "make graph" into the terminal once in base directory for this project. 
+
+3. Features: 
+    |> Once you run make graph, you will see a window pop up, we have 
+    automatically designed it to make it a 1000x1000 window. You should not 
+    see anything when you first open it. If you click the window and then 
+    press and hold any key, you should see a sine curve appear and move 
+    leftwards. 
+
+    |> There are also many things that we made adjustable. The variables sx and
+    sy define the scaling of the values of x and y. For example if sx=10 then 
+    10 pixels will equal 1 on the x axis. You can also change the size of the 
+    window by running open_graph " {dimensions here}" (notice the space at the
+    beginning). 
+
+    |> In terms of features we can change from our end, we can graph basically 
+    any 2d function, we can change the speed at which the graph evolves, 
+    and we can change the input that makes it evolve. For example in this
+    sprint we made it so that you can press a key to make the graph 
+    shift left, but we could also do something like make the graph shift upwards
+    based on the certain position of your mouse. 
+
+4. Error handling: 
+
+(a) If you run into an error that says its missing some system dependencies when 
+you try and install the graphics module, it will list out those system 
+dependencies and you can run "brew install {insert system dependency here}" 
+and try again. 
+
+(b) If you run into the error "exception Graphics.Graphic_failure('Cannot'
+open display {insert display name here}')" the only fix we have found around 
+this so far is that you need to explicitely tell the graphics module exactly
+which window to open. If you go to our file you will see a command to the 
+function "open_graph" provided by the graphics module. What we have in there 
+to begin with is open_graph " 1000x1000" which opens a window with those 
+dimensions. To fix the detection problem, you need to type: open_graph 
+" {insert display name here}". Once you do that and it actually recognizes 
+the display you can revert back tot he old open_graph command to 
+open_graph " 1000x1000" and it should give you our graph as intended. 
