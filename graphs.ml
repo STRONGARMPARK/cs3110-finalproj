@@ -1,6 +1,6 @@
 open Graphics
 ;;
-let _ = open_graph " 1000x1000"
+let _ = open_graph " :0 1000x1000"
 
 let sx = 20 
 
