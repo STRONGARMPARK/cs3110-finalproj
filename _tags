@@ -1,1 +1,1 @@
-true: package(ounit2),package(ANSITerminal),package(Graphics)
+true: package(ounit2),package(ANSITerminal),package(graphics)
