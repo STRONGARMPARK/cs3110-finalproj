@@ -1,7 +1,7 @@
-MODULES=evolution1d
+MODULES=evolution1d graphs
 OBJECTS=$(MODULES:=.cmo)
 MLS=$(MODULES:=.ml)
-#MLIS=$(MODULES:=.mli)
+MLIS=$(MODULES:=.mli)
 #TEST=test.byte
 MAIN=graphs.byte
 OCAMLBUILD=ocamlbuild -use-ocamlfind
