@@ -85,7 +85,7 @@ try
     remember_mode false;
     let st = wait_next_event [Key_pressed] in
     synchronize ();
-    let mx = st.mouse_x + 5 and my = st.mouse_y + 5 in
+    (* let mx = st.mouse_x + 5 and my = st.mouse_y + 5 in *)
     set_color (rgb 0 0 0);
 
     let _ = List.mapi (fun i p ->

@@ -3,7 +3,8 @@ OBJECTS=$(MODULES:=.cmo)
 MLS=$(MODULES:=.ml)
 MLIS=$(MODULES:=.mli)
 #TEST=test.byte
-MAIN=graphs.byte
+GRAPH=graphs.byte
+MAIN=userint.byte
 OCAMLBUILD=ocamlbuild -use-ocamlfind
 
 default: build
@@ -16,6 +17,9 @@ test:
 	$(OCAMLBUILD) -tag 'debug' $(TEST) && ./$(TEST) -runner sequential
 
 graph:
+	$(OCAMLBUILD) -tag 'debug' $(GRAPH) && OCAMLRUNPARAM=b ./$(GRAPH)
+
+go:
 	$(OCAMLBUILD) -tag 'debug' $(MAIN) && OCAMLRUNPARAM=b ./$(MAIN)
 
 zip:
