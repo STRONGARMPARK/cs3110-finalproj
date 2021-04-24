@@ -1,8 +1,8 @@
 open Graphs;;
 open Evolution1d;;
-let rec graph_it solver domain initial_condition boundary_condition wop =
 
 
+let rec graph_it solver domain initial_condition boundary_condition wop = "hi" in
 
 let rec wave_or_prob solver domain initial_condition boundary_condition = 
   ANSITerminal.print_string [ ANSITerminal.cyan ]
@@ -33,6 +33,7 @@ let rec wave_or_prob solver domain initial_condition boundary_condition =
     | _ -> print := true
   done; 
   graph_it solver domain initial_condition boundary_condition !wop
+in
 
 
 let rec boundary_conditions_one_dimension solver domain initial_condition = 

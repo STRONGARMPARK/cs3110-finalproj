@@ -51,13 +51,11 @@ functor (Solver : Evolution1D) -> struct
 
     let _ = axis opx opy in
 
-    let w = [{Complex.re = 1.0;im = 3.0}; {Complex.re = 2.0;im = 1.0}; {Complex.re = -0.3;im = 1.2}; {Complex.re = 3.0;im = 3.0}; {Complex.re = 1.0;im = 3.0}; {Complex.re = 1.0;im = 3.0};] in 
-    let rep = S.from_list w in
+    let time = ref 0;
+    let w = ref [{Complex.re = 1.0;im = 3.0}; {Complex.re = 2.0;im = 1.0}; {Complex.re = -0.3;im = 1.2}; {Complex.re = 3.0;im = 3.0}; {Complex.re = 1.0;im = 3.0}; {Complex.re = 1.0;im = 3.0};] in 
+    let rep = S.from_list !w in
     let domain = (-6., 6.) in
     let lengthdomain = (int_of_float) (snd domain -. fst domain) in
-    let prob = S.probabilities rep in
-    let numPoints = List.length prob in
-    let spaceBetween = (float) lengthdomain /. (float) numPoints in
 
     try
       while true do
@@ -67,6 +65,11 @@ functor (Solver : Evolution1D) -> struct
         synchronize ();
         (* let mx = st.mouse_x + 5 and my = st.mouse_y + 5 in *)
         set_color (rgb 0 0 0);
+
+        (* time := Sys.time () - !time in *)
+        let prob = S.probabilities rep in
+        let numPoints = List.length prob in
+        let spaceBetween = (float) lengthdomain /. (float) numPoints in
     
         let _ = List.mapi (fun i p ->
             let x = int_of_float ((fst domain +. spaceBetween *. (float) i) *. (float_of_int sx)) + opx in
