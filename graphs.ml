@@ -19,13 +19,13 @@ let tick_v len opx opy sx x =
     draw_text (string_of_int x) (opx + x * sx) (opy - len / 2 - 15)
 
 module type Graph = sig
-  val graph : 'a -> unit
+  val graph : Evolution1d.domain -> Complex.t list -> string -> unit
 end
 
 module Make = 
 functor (Solver : Evolution1D) -> struct 
   module S = Solver 
-  let graph x = 
+  let graph domain initial_condition boundary_condition = 
     
     let _ = open_graph ":0 720x720" in
 
@@ -57,8 +57,8 @@ functor (Solver : Evolution1D) -> struct
 
     let t = ref 0. in
     let t_elapsed = ref 0. in
-    let w = ref [{Complex.re = 1.0;im = 3.0}; {Complex.re = 2.0;im = 1.0}; {Complex.re = -0.3;im = 1.2}; {Complex.re = 3.0;im = 3.0}; {Complex.re = 1.0;im = 3.0}; {Complex.re = 1.0;im = 3.0};] in 
-    let domain = (-6., 6.) in
+    let w = ref initial_condition in 
+    let domain = domain in
     let lengthdomain = (int_of_float) (snd domain -. fst domain) in
 
     try
@@ -77,7 +77,11 @@ functor (Solver : Evolution1D) -> struct
 
         let rep = S.from_list !w in
         let prob = S.probabilities rep in
-        w := S.evolve rep 0.01 Periodic domain dt false |> S.to_list;
+        w := 
+        match boundary_condition with 
+        | "periodic" ->  S.evolve rep 0.01 Periodic domain dt false |> S.to_list;
+        | "dirichlet" -> S.evolve rep 0.01 Dirichlet domain dt false |> S.to_list;
+        | _ -> failwith "not possible"; ;
       
         let numPoints = List.length prob in
         let spaceBetween = (float) lengthdomain /. (float) numPoints in
@@ -88,7 +92,7 @@ functor (Solver : Evolution1D) -> struct
             let h = int_of_float (p *. (float_of_int sy)) in
             let w = int_of_float (spaceBetween *. (float_of_int sx)) in
             let _ = fill_rect x y w h in
-            let _ = draw_text (string_of_float p) x (y + h + 5) in
+            (* let _ = draw_text (string_of_float p) x (y + h + 5) in *)
             p
           ) prob in
     

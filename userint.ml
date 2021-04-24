@@ -1,8 +1,18 @@
 open Graphs;;
 open Evolution1d;;
 
+module GrapherFPS = Graphs.Make (FreeParticleEvolutionSpectral1D)
+module GrapherFPE = Graphs.Make (FreeParticleEvolutionEulers1D)
+module GrapherHOE = Graphs.Make (HarmonicOscillatorEvolutionEulers1D)
 
-let rec graph_it solver domain initial_condition boundary_condition wop = "hi" in
+let rec graph_it_fps solver domain initial_condition boundary_condition wop = 
+  GrapherFPS.graph domain initial_condition boundary_condition
+
+let rec graph_it_fpe solver domain initial_condition boundary_condition wop = 
+  GrapherFPE.graph domain initial_condition boundary_condition
+
+let rec graph_it_hoe solver domain initial_condition boundary_condition wop = 
+  GrapherHOE.graph domain initial_condition boundary_condition
 
 let rec wave_or_prob solver domain initial_condition boundary_condition = 
   ANSITerminal.print_string [ ANSITerminal.cyan ]
@@ -32,8 +42,11 @@ let rec wave_or_prob solver domain initial_condition boundary_condition =
     | "2" -> finished := true; wop := "probability"
     | _ -> print := true
   done; 
-  graph_it solver domain initial_condition boundary_condition !wop
-in
+  match solver with 
+  | "fps" -> graph_it_fps solver domain initial_condition boundary_condition wop 
+  | "fpe" -> graph_it_fpe solver domain initial_condition boundary_condition wop 
+  | "hoe" -> graph_it_hoe solver domain initial_condition boundary_condition wop
+  | _ -> failwith "not possible"
 
 
 let rec boundary_conditions_one_dimension solver domain initial_condition = 
@@ -109,7 +122,7 @@ let rec initial_function_one_dimension solver domain =
           let list_verse_string = String.split_on_char(' ') clean_verse in 
           let list_verse = List.map float_of_string list_verse_string in 
           let length = List.length list_verse in 
-          if length mod 2 = 1 then begin print := true; print_endline "this ran! 5"; end 
+          if length mod 2 = 1 then begin print := true; end 
           else if length < 8 then begin print := true; end 
           else let complex_verse = to_complex_list list_verse [] in 
             begin initial_condition := complex_verse; finished := true end
