@@ -26,7 +26,7 @@ let rec wave_or_prob solver domain initial_condition boundary_condition =
     | "2" -> finished := true; wop := "probability"
     | _ -> print := true
   done; 
-  ()
+  print_endline "your specifications have been recorded!"
 
 
 let rec boundary_conditions_one_dimension solver domain initial_condition = 
