@@ -2,6 +2,22 @@ open Graphics
 open Evolution1d
 ;;
 
+let draw_text str x y = 
+  let _ = moveto x y in
+  draw_string str
+let point x y = fill_circle x y 1
+let point_size x y s = fill_circle x y s
+
+let tick_h len opx opy sy y = 
+  if y <> 0 then 
+    let _ = draw_poly_line [|(opx - len / 2, opy + y * sy);(opx + len / 2, opy + y * sy)|] in
+    draw_text (string_of_int y) (opx + len / 2 + 5) (opy + y * sy - 5)
+
+let tick_v len opx opy sx x = 
+  if x <> 0 then 
+    let _ = draw_poly_line [|(opx + x * sx, opy - len / 2);(opx + x * sx, opy + len / 2)|] in
+    draw_text (string_of_int x) (opx + x * sx) (opy - len / 2 - 15)
+
 module type Graph = sig
   val graph : 'a -> unit
 end
@@ -12,11 +28,9 @@ functor (Solver : Evolution1D) -> struct
   let graph x = 
     
     let _ = open_graph ":0 720x720" in
+
     let sx = 40 in
     let sy = 320 in
-
-    let point x y = fill_circle x y 1 in
-    let point_size x y s = fill_circle x y s in
 
     let l = [] in
 
@@ -28,19 +42,9 @@ functor (Solver : Evolution1D) -> struct
 
     let tick_length = 4 in
 
-    let tick_h opx opy y = 
-      draw_poly_line [|(opx - tick_length / 2, opy + y * sy); 
-                      (opx + tick_length / 2, opy + y * sy)|] 
-    in
-
-    let tick_v opx opy x = 
-      draw_poly_line [|(opx + x * sx, opy - tick_length / 2); 
-                      (opx + x * sx, opy + tick_length / 2)|] 
-    in
-
     let generate_ticks opx opy = 
-      let _ = for i = 0 to size_x () / sx do tick_v opx opy (i - opx / sx) done in
-      for i = 0 to size_y () / sy do tick_h opx opy (i - opy / sy) done 
+      let _ = for i = 0 to size_x () / sx do tick_v tick_length opx opy sx (i - opx / sx) done in
+      for i = 0 to size_y () / sy do tick_h tick_length opx opy sy (i - opy / sy) done 
     in
 
     let axis opx opy =
@@ -51,9 +55,9 @@ functor (Solver : Evolution1D) -> struct
 
     let _ = axis opx opy in
 
-    let time = ref 0;
+    let t = ref 0. in
+    let t_elapsed = ref 0. in
     let w = ref [{Complex.re = 1.0;im = 3.0}; {Complex.re = 2.0;im = 1.0}; {Complex.re = -0.3;im = 1.2}; {Complex.re = 3.0;im = 3.0}; {Complex.re = 1.0;im = 3.0}; {Complex.re = 1.0;im = 3.0};] in 
-    let rep = S.from_list !w in
     let domain = (-6., 6.) in
     let lengthdomain = (int_of_float) (snd domain -. fst domain) in
 
@@ -61,13 +65,20 @@ functor (Solver : Evolution1D) -> struct
       while true do
     
         remember_mode false;
-        let st = wait_next_event [Key_pressed] in
+        let st = wait_next_event [Key_pressed] in  
         synchronize ();
         (* let mx = st.mouse_x + 5 and my = st.mouse_y + 5 in *)
         set_color (rgb 0 0 0);
 
-        (* time := Sys.time () - !time in *)
+        let dt = 0.1 in
+        t := Sys.time ();
+        t_elapsed := !t_elapsed +. 0.1;
+        let _ = draw_text ("Time: " ^ string_of_float !t_elapsed) (5) (size_y () - 15) in
+
+        let rep = S.from_list !w in
         let prob = S.probabilities rep in
+        w := S.evolve rep 0.01 Periodic domain dt false |> S.to_list;
+      
         let numPoints = List.length prob in
         let spaceBetween = (float) lengthdomain /. (float) numPoints in
     
@@ -77,6 +88,7 @@ functor (Solver : Evolution1D) -> struct
             let h = int_of_float (p *. (float_of_int sy)) in
             let w = int_of_float (spaceBetween *. (float_of_int sx)) in
             let _ = fill_rect x y w h in
+            let _ = draw_text (string_of_float p) x (y + h + 5) in
             p
           ) prob in
     
