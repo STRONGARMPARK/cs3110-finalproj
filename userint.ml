@@ -1,3 +1,9 @@
+open Graphs;;
+open Evolution1d;;
+let rec graph_it solver domain initial_condition boundary_condition wop =
+
+
+
 let rec wave_or_prob solver domain initial_condition boundary_condition = 
   ANSITerminal.print_string [ ANSITerminal.cyan ]
   "\n\n\nFinally, would you like the wave function or the probability distribution? Again much like before just type 1 or 2 and press enter for the option that you want.";
@@ -26,7 +32,7 @@ let rec wave_or_prob solver domain initial_condition boundary_condition =
     | "2" -> finished := true; wop := "probability"
     | _ -> print := true
   done; 
-  print_endline "your specifications have been recorded!"
+  graph_it solver domain initial_condition boundary_condition !wop
 
 
 let rec boundary_conditions_one_dimension solver domain initial_condition = 
