@@ -80,14 +80,12 @@ functor (Solver : Evolution1D) -> struct
         remember_mode false;
         let _ = wait_next_event [Key_pressed] in  
         synchronize ();
-        (* let mx = st.mouse_x + 5 and my = st.mouse_y + 5 in *)
         set_color (rgb 0 0 0);
 
         let dt = 0.1 in
         t := Sys.time ();
         t_elapsed := !t_elapsed +. 0.1;
         let _ = draw_text ("Time: " ^ string_of_float !t_elapsed) (5) (size_y () - 15) in
-
         let rep = S.from_list !w in
         w := S.evolve rep 0.01 boundary_condition domain dt false |> S.to_list;
     
@@ -120,9 +118,8 @@ functor (Solver : Evolution1D) -> struct
       while true do
     
         remember_mode false;
-        let st = wait_next_event [Key_pressed] in  
+        let _ = wait_next_event [Key_pressed] in  
         synchronize ();
-        (* let mx = st.mouse_x + 5 and my = st.mouse_y + 5 in *)
         set_color (rgb 0 0 0);
 
         let dt = 0.1 in
