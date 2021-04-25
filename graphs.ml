@@ -42,8 +42,8 @@ let dotted_line size space p1 p2 = dotted_line_section size space p2 p1
 
 
 module type Graph = sig
-  val graph_prob : Evolution1d.domain -> Complex.t list -> string -> unit
-  val graph_wave : Evolution1d.domain -> Complex.t list -> string -> unit
+  val graph_prob : Evolution1d.domain -> Complex.t list -> Evolution1d.boundary_conditions -> unit
+  val graph_wave : Evolution1d.domain -> Complex.t list -> Evolution1d.boundary_conditions -> unit
 end
 
 module Make = 
@@ -63,8 +63,6 @@ functor (Solver : Evolution1D) -> struct
     in
     axis opx opy
 
-
-
   let graph_wave domain initial_condition boundary_condition = 
     let width = 700 in let height = 700 in 
     let opx = 350 in let opy = 350 in
@@ -80,7 +78,7 @@ functor (Solver : Evolution1D) -> struct
       while true do
     
         remember_mode false;
-        let st = wait_next_event [Key_pressed] in  
+        let _ = wait_next_event [Key_pressed] in  
         synchronize ();
         (* let mx = st.mouse_x + 5 and my = st.mouse_y + 5 in *)
         set_color (rgb 0 0 0);
@@ -91,12 +89,7 @@ functor (Solver : Evolution1D) -> struct
         let _ = draw_text ("Time: " ^ string_of_float !t_elapsed) (5) (size_y () - 15) in
 
         let rep = S.from_list !w in
-        w := match boundary_condition with 
-          | "periodic" ->  S.evolve rep 0.01 Periodic domain dt false |> S.to_list;
-          | "dirichlet" -> S.evolve rep 0.01 Dirichlet domain dt false |> S.to_list;
-          | _ -> failwith "not possible"; 
-        ;
-    
+        w := S.evolve rep 0.01 boundary_condition domain dt false |> S.to_list;
     
         let _ = List.mapi (fun i (point : Complex.t) ->
             let x = opx + int_of_float (point.re *. (float) sx) in
@@ -139,11 +132,7 @@ functor (Solver : Evolution1D) -> struct
 
         let rep = S.from_list !w in
         let prob = S.probabilities rep in
-        w := match boundary_condition with 
-          | "periodic" ->  S.evolve rep 0.01 Periodic domain dt false |> S.to_list;
-          | "dirichlet" -> S.evolve rep 0.01 Dirichlet domain dt false |> S.to_list;
-          | _ -> failwith "not possible"; 
-        ;
+        w := S.evolve rep 0.01 boundary_condition domain dt false |> S.to_list;
       
         let numPoints = List.length prob in
         let spaceBetween = (float) lengthdomain /. (float) numPoints in
