@@ -2,22 +2,16 @@ open Graphics
 open Evolution1d
 ;;
 
-let vop op a b = 
-  (op (fst a) (fst b), op (snd a) (snd b))
+let vop op a b = (op (fst a) (fst b), op (snd a) (snd b))
 
 let vfloat (a : (int * int)) = (((float) (fst a)), ((float) (snd a)))
 let vint (a : (float * float)) = (((int_of_float) (fst a)), ((int_of_float) (snd a)))
 
-let mag_float a = 
-  sqrt((fst a) *. (fst a) +. (snd a) *. (snd a))
+let mag_float a = sqrt((fst a) *. (fst a) +. (snd a) *. (snd a))
 
-let mag_int a = 
-  let fa = vfloat a in
-  mag_float fa
+let mag_int a = mag_float (vfloat a)
 
-let draw_text str x y = 
-  let _ = moveto x y in
-  draw_string str
+let draw_text str x y = let _ = moveto x y in draw_string str
 let point x y = fill_circle x y 1
 let point_size x y s = fill_circle x y s
 
