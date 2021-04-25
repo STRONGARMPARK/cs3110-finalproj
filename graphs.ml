@@ -1,62 +1,158 @@
 open Graphics
+open Evolution1d
 ;;
-let _ = open_graph " :0 1000x1000"
 
-let sx = 20 
+let vop op a b = (op (fst a) (fst b), op (snd a) (snd b))
 
-let sy = 20
+let vfloat (a : (int * int)) = (((float) (fst a)), ((float) (snd a)))
+let vint (a : (float * float)) = (((int_of_float) (fst a)), ((int_of_float) (snd a)))
 
-let point x y =
-  let _ = set_color black in 
-  fill_circle x y 1
+let mag_float a = sqrt((fst a) *. (fst a) +. (snd a) *. (snd a))
 
-let l = []
+let mag_int a = mag_float (vfloat a)
 
-let _ = List.map (fun p -> point (fst p) (snd p)) l
+let draw_text str x y = let _ = moveto x y in draw_string str
+let point x y = fill_circle x y 1
+let point_size x y s = fill_circle x y s
 
-let opx = (size_x () / 2)
+let tick_h len opx opy sy y = 
+  if y <> 0 then 
+    let _ = draw_poly_line [|(opx - len / 2, opy + y * sy);(opx + len / 2, opy + y * sy)|] in
+    draw_text (string_of_int y) (opx + len / 2 + 5) (opy + y * sy - 5)
 
-let opy = (size_y () / 2)
+let tick_v len opx opy sx x = 
+  if x <> 0 then 
+    let _ = draw_poly_line [|(opx + x * sx, opy - len / 2);(opx + x * sx, opy + len / 2)|] in
+    draw_text (string_of_int x) (opx + x * sx) (opy - len / 2 - 15)
 
-let tick_length = 4
+let rec dotted_line_section size space p2 cur = 
+  let dir = vop ( -. ) (vfloat p2) (vfloat cur) in
+  let m = mag_float dir in
+  let dist_to_next = vop ( /. ) dir (m,m) |> vop ( *. ) (vfloat (size, size)) in
+  let next = vop ( + ) cur (vint dist_to_next) in
+  if mag_int (vop ( - ) p2 next) > 0. then
+    let _ = draw_poly_line [|cur;next|] in
+    let dist_to_next = vop ( /. ) dir (m,m) |> vop ( *. ) (vfloat (size+space, size+space)) in
+    let next = vop ( + ) cur (vint dist_to_next) in
+    dotted_line_section size space p2 next
+  else ""
 
-let tick_h opx opy y = 
-  draw_poly_line [|(opx - tick_length / 2, opy + y * sy); 
-                   (opx + tick_length / 2, opy + y * sy)|]
 
-let tick_v opx opy x = 
-  draw_poly_line [|(opx + x * sx, opy - tick_length / 2); 
-                   (opx + x * sx, opy + tick_length / 2)|]
+let dotted_line size space p1 p2 = dotted_line_section size space p2 p1
 
-let generate_ticks opx opy = 
-  let _ = for i = 0 to size_x () / sx do tick_v opx opy (i - opx / sx) done in
-  for i = 0 to size_y () / sy do tick_h opx opy (i - opy / sy) done
 
-let axis opx opy =
-  let _ = draw_poly_line [|(0, opy);(size_x (), opy)|] in
-  let _ = draw_poly_line [|(opx, 0);(opx, size_y ())|] in
-  generate_ticks opx opy
+module type Graph = sig
+  val graph_prob : Evolution1d.domain -> Complex.t list -> Evolution1d.boundary_conditions -> unit
+  val graph_wave : Evolution1d.domain -> Complex.t list -> Evolution1d.boundary_conditions -> unit
+end
 
-let plot_func f = 
-  for i = 0 to size_x () do 
-    let x = float_of_int (i - opx) /. float_of_int sx in
-    let y = int_of_float (f x *. (float_of_int sy)) in
-    point i (y + opy) 
-  done
+module Make = 
+functor (Solver : Evolution1D) -> struct 
+  module S = Solver 
 
-let _ = axis opx opy
+  let setup_graph w h opx opy sx sy tick_length = 
+    let _ = open_graph (":0 " ^ (string_of_int w) ^ "x" ^ (string_of_int h)) in
+    let generate_ticks opx opy = 
+      let _ = for i = 0 to size_x () / sx do tick_v tick_length opx opy sx (i - opx / sx) done in
+      for i = 0 to size_y () / sy do tick_h tick_length opx opy sy (i - opy / sy) done 
+    in
+    let axis opx opy =
+      let _ = draw_poly_line [|(0, opy);(size_x (), opy)|] in
+      let _ = draw_poly_line [|(opx, 0);(opx, size_y ())|] in
+      generate_ticks opx opy 
+    in
+    axis opx opy
 
-let i = ref 0.0;
+  let graph_wave domain initial_condition boundary_condition = 
+    let width = 700 in let height = 700 in 
+    let opx = 350 in let opy = 350 in
+    let sx = 40 in let sy = 320 in
+    let _ = setup_graph width height opx opy sx sy 4 in
 
-;;
-try
-  while true do
-    i := !i +. 0.1;
-    remember_mode false;
-    let st = wait_next_event [Key_pressed] in
-    synchronize ();
-    let mx = st.mouse_x + 5 and my = st.mouse_y + 5 in
-    plot_func (fun x -> sin (x +. !i));
-    point mx my
-  done
-with Exit -> ()
+    let t = ref 0. in
+    let t_elapsed = ref 0. in
+    let w = ref initial_condition in 
+    let domain = domain in
+
+    try
+      while true do
+    
+        remember_mode false;
+        let _ = wait_next_event [Key_pressed] in  
+        synchronize ();
+        set_color (rgb 0 0 0);
+
+        let dt = 0.1 in
+        t := Sys.time ();
+        t_elapsed := !t_elapsed +. 0.1;
+        let _ = draw_text ("Time: " ^ string_of_float !t_elapsed) (5) (size_y () - 15) in
+        let rep = S.from_list !w in
+        w := S.evolve rep 0.01 boundary_condition domain dt false |> S.to_list;
+    
+        let _ = List.mapi (fun i (point : Complex.t) ->
+            let x = opx + int_of_float (point.re *. (float) sx) in
+            let y = opy + int_of_float (point.im *. (float) sy) in
+            let _ = point_size x y 3 in
+            (* let _ = draw_text (string_of_float p) x (y + h + 5) in *)
+            point
+          ) !w in
+    
+        set_color black;
+      done
+    with Exit -> ()
+
+  let graph_prob domain initial_condition boundary_condition = 
+
+    let width = 700 in let height = 700 in 
+    let opx = 350 in let opy = 350 in
+    let sx = 40 in let sy = 320 in
+    let _ = setup_graph width height opx opy sx sy 4 in
+
+    let t = ref 0. in
+    let t_elapsed = ref 0. in
+    let w = ref initial_condition in 
+    let domain = domain in
+    let lengthdomain = (int_of_float) (snd domain -. fst domain) in
+
+    try
+      while true do
+    
+        remember_mode false;
+        let _ = wait_next_event [Key_pressed] in  
+        synchronize ();
+        set_color (rgb 0 0 0);
+
+        let dt = 0.1 in
+        t := Sys.time ();
+        t_elapsed := !t_elapsed +. 0.1;
+        let _ = draw_text ("Time: " ^ string_of_float !t_elapsed) (5) (size_y () - 15) in
+
+        let rep = S.from_list !w in
+        let prob = S.probabilities rep in
+        w := S.evolve rep 0.01 boundary_condition domain dt false |> S.to_list;
+      
+        let numPoints = List.length prob in
+        let spaceBetween = (float) lengthdomain /. (float) numPoints in
+
+        let max = ref 0. in
+
+        let _ = List.mapi (fun i p ->
+            if p > !max then max := p;
+            let x = int_of_float ((fst domain +. spaceBetween *. (float) i) *. (float_of_int sx)) + opx in
+            let y = opy in
+            let h = int_of_float (p *. (float_of_int sy)) in
+            let w = int_of_float (spaceBetween *. (float_of_int sx)) in
+            let _ = fill_rect x y w h in
+            (* let _ = draw_text (string_of_float p) x (y + h + 5) in *)
+            p
+          ) prob in
+
+        let max_p = opy + int_of_float (!max *. (float) sy) in
+        let _ = dotted_line 5 10 (0, max_p) (size_x (), max_p) in
+        let _ = draw_text (string_of_float !max) 10 (max_p + 10) in
+    
+        set_color black;
+      done
+    with Exit -> ()
+
+end 

@@ -1,9 +1,11 @@
-MODULES=evolution1d
+MODULES=evolution1d graphs testing
 OBJECTS=$(MODULES:=.cmo)
 MLS=$(MODULES:=.ml)
-#MLIS=$(MODULES:=.mli)
+MLIS=$(MODULES:=.mli)
 #TEST=test.byte
-MAIN=graphs.byte
+GRAPH=graphs.byte
+MAIN=userint.byte
+TESTING=testing.byte
 OCAMLBUILD=ocamlbuild -use-ocamlfind
 
 default: build
@@ -16,7 +18,13 @@ test:
 	$(OCAMLBUILD) -tag 'debug' $(TEST) && ./$(TEST) -runner sequential
 
 graph:
+	$(OCAMLBUILD) -tag 'debug' $(GRAPH) && OCAMLRUNPARAM=b ./$(GRAPH)
+
+go:
 	$(OCAMLBUILD) -tag 'debug' $(MAIN) && OCAMLRUNPARAM=b ./$(MAIN)
+
+try: 
+	$(OCAMLBUILD) -tag 'debug' $(TESTING) && OCAMLRUNPARAM=b ./$(TESTING)
 
 zip:
 	zip schrodinger.zip *.ml* *.txt* _tags .merlin .ocamlformat Makefile	
