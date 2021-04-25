@@ -1,5 +1,5 @@
 open Graphics
-open Evolution1d
+open Evolution
 ;;
 
 let vop op a b = (op (fst a) (fst b), op (snd a) (snd b))
@@ -42,8 +42,8 @@ let dotted_line size space p1 p2 = dotted_line_section size space p2 p1
 
 
 module type Graph = sig
-  val graph_prob : Evolution1d.domain -> Complex.t list -> Evolution1d.boundary_conditions -> unit
-  val graph_wave : Evolution1d.domain -> Complex.t list -> Evolution1d.boundary_conditions -> unit
+  val graph_prob : Evolution.domain -> Complex.t list -> Evolution.boundary_conditions -> unit
+  val graph_wave : Evolution.domain -> Complex.t list -> Evolution.boundary_conditions -> unit
 end
 
 module Make = 
@@ -124,7 +124,7 @@ functor (Solver : Evolution1D) -> struct
 
         let dt = 0.1 in
         t := Sys.time ();
-        t_elapsed := !t_elapsed +. 0.1;
+        t_elapsed := !t_elapsed +. dt;
         let _ = draw_text ("Time: " ^ string_of_float !t_elapsed) (5) (size_y () - 15) in
 
         let rep = S.from_list !w in

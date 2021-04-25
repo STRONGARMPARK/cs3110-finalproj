@@ -1,5 +1,5 @@
 open Graphs;;
-open Evolution1d;;
+open Evolution;;
 
 module GrapherFPS = Graphs.Make (FreeParticleEvolutionSpectral1D)
 module GrapherFPE = Graphs.Make (FreeParticleEvolutionEulers1D)

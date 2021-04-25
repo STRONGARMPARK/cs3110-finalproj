@@ -389,6 +389,14 @@ let ifft2 mat n m =
 let get_k2_2d (n : int) (m : int) (d2 : domain2d) =
   List.map2 (fun x y -> x +. y ) (get_k2 n (fst d2)) (get_k2 m (snd d2))
 
+let probabilites1d vec =
+  vec |> List.map Complex.norm2
+
+let rec probs mat =
+  match mat with
+  |[] -> []
+  |h :: t -> (probabilites1d h) :: (probs t)
+
 module FreeParticleEvolutionSpectral2D : Evolution2D = struct
   (** AF: t represents the 2D (discrete) fourier transform of a 
     wave function. *)
@@ -424,18 +432,9 @@ module FreeParticleEvolutionSpectral2D : Evolution2D = struct
 
   let to_list w =
     (w |> ifft2) (List.length w) (List.length (List.hd w))
-
-  let probabilites1d vec =
-    vec |> List.map Complex.norm2
   
   let probabilities w = 
-    let mat = to_list w in
-    let rec probs mat =
-      match mat with
-      |[] -> []
-      |h :: t -> (probabilites1d h) :: (probs t)
-    in
-    probs mat
+    w |> to_list |> probs
 
   let step w tau b d2 = 
     if b <> Periodic then 
@@ -477,6 +476,7 @@ let second_derivative_2d (w : (Complex.t array) array) (b : boundary_conditions)
         done
       |Dirichlet ->
         ();
+      | _ -> raise (Invalid_argument "Illegal boundary condition.");
     in
     boundary b wxx;
   
@@ -511,6 +511,7 @@ let second_derivative_2d (w : (Complex.t array) array) (b : boundary_conditions)
         done
       |Dirichlet ->
         ();
+      | _ -> raise (Invalid_argument "Illegal boundary condition.");
       in
       boundary b wyy;
 
@@ -524,11 +525,176 @@ let second_derivative_2d (w : (Complex.t array) array) (b : boundary_conditions)
       
       wyy
   
-(** 
+let der_mapper der tau n m =
+  let mapped_der = Array.make n (Array.make m Complex.zero) in
+  for i = 0 to n - 1 do
+    for j = 0 to m - 1 do
+      mapped_der.(i).(j) <- Complex.mul ({re = 0.;im = tau /. 2.}) der.(i).(j);
+    done;
+  done;
+  mapped_der
+
+let square_mapper x2 tau =
+  let n = Array.length x2 in
+  let mapped_x2 = Array.make n Complex.zero in
+  for i = 0 to n - 1 do
+    mapped_x2.(i) <- {Complex.re=0.;im = -1. *. x2.(i) *. tau /. 2.};
+  done;
+  mapped_x2
+
+let adder arr1 arr2 n m = 
+  let res = Array.make n (Array.make m Complex.zero) in
+  for i = 0 to n - 1 do
+    for j = 0 to m - 1 do
+      res.(i).(j) <- Complex.add arr1.(i).(j) arr2.(i).(j);
+    done;
+  done;
+  res
+
+let arr2d_to_lst2d arr = 
+  let rlst = ref [] in
+  let rcol = ref [] in
+  for i = 0 to (Array.length arr) - 1 do
+    for j = 0 to (Array.length arr.(i)) - 1 do
+      rcol := arr.(i).(j) :: !rcol;
+    done;
+    rlst := (List.rev !rcol) :: !rlst;
+    rcol := [];
+  done;
+  List.rev !rlst
+
+let lst2d_to_arr2d mat = 
+  let arr = Array.make_matrix (List.length mat) (List.length (List.hd mat)) 
+    Complex.zero
+  in
+  let rec col_builder arr col i j =
+    match col with
+    |[] -> ();
+    |h :: t -> arr.(i).(j) <- h; col_builder arr t i (j+1)
+  in
+  let rec builder arr mat i = 
+    match mat with
+    |[] -> ();
+    |h :: t -> col_builder arr h i 0; builder arr t (i+1)
+  in
+  builder arr (FreeParticleEvolutionSpectral2D.normalize mat) 0;
+  arr
+
 module FreeParticleEvolutionEulers2D : Evolution2D = struct
 
   type t = (Complex.t array) array
 
+  let boundary_condition = [Periodic; Dirichlet]
+
+  let normalize = FreeParticleEvolutionSpectral2D.normalize
+  
+  let from_list = lst2d_to_arr2d
+
+  let to_list = arr2d_to_lst2d
+
+  let probabilities w = 
+    w |> to_list |> probs
+
+  let step w tau b d2 =
+    let n = Array.length w in
+    let m = Array.length w.(0) in
+    let wxx = second_derivative_2d w b d2 n m true in
+    let wyy = second_derivative_2d w b d2 n m false in
+    let mapped_wxx = der_mapper wxx tau n m in
+    let mapped_wyy = der_mapper wyy tau n m in
+    adder (adder mapped_wxx mapped_wyy n m) w n m
+
+  
+  let step_mutate w tau b d2 n m = 
+    let wxx = second_derivative_2d w b d2 n m true in
+    let wyy = second_derivative_2d w b d2 n m false in
+    let mapped_wxx = der_mapper wxx tau n m in
+    let mapped_wyy = der_mapper wyy tau n m in
+    for i = 0 to n - 1 do 
+      for j = 0 to m - 1 do
+        w.(i).(j) <- Complex.add (Complex.add 
+          w.(i).(j) mapped_wxx.(i).(j)) mapped_wyy.(i).(j)
+      done
+    done
+    
+  let evolve w tau b d2 time print = 
+    let n = Array.length w in
+    let m = Array.length w.(0) in
+    let wnew = Array.copy w in
+    let steps = Float.to_int (Float.ceil (time /. tau)) in
+    for i = 0 to steps do
+      (*TODO: Implement printing*)
+      step_mutate wnew tau b d2 n m;
+    done;
+
+    wnew
   
 end
-*)
+
+module HarmonicOscillatorEvolutionEulers2D : Evolution2D = struct
+
+  type t = (Complex.t array) array
+
+  let boundary_condition = FreeParticleEvolutionEulers2D.boundary_condition
+
+  let normalize = FreeParticleEvolutionSpectral2D.normalize
+
+  let from_list = lst2d_to_arr2d
+
+  let to_list = arr2d_to_lst2d
+
+  let probabilities w = 
+    w |> to_list |> probs
+
+  let step w tau b d2 =
+    let n = Array.length w in
+    let m = Array.length w.(0) in
+    let wxx = second_derivative_2d w b d2 n m true in
+    let wyy = second_derivative_2d w b d2 n m false in
+    let x2 = get_x2 n (fst d2) in
+    let y2 = get_x2 m (snd d2) in
+    let mapped_wxx = der_mapper wxx tau n m in
+    let mapped_wyy = der_mapper wyy tau n m in
+    let mapped_x2 = square_mapper x2 tau in
+    let mapped_y2 = square_mapper y2 tau in
+
+    let res = adder (adder mapped_wxx mapped_wyy n m) w n m in
+    for i = 0 to n - 1 do
+      for j = 0 to m - 1 do
+        res.(i).(j) <- 
+          Complex.add (Complex.add res.(i).(j) mapped_x2.(i)) mapped_y2.(j);
+      done;
+    done;
+
+    res
+  
+  let step_mutate w tau b d2 n m = 
+    let wxx = second_derivative_2d w b d2 n m true in
+    let wyy = second_derivative_2d w b d2 n m false in
+    let x2 = get_x2 n (fst d2) in
+    let y2 = get_x2 m (snd d2) in
+    let mapped_wxx = der_mapper wxx tau n m in
+    let mapped_wyy = der_mapper wyy tau n m in
+    let mapped_x2 = square_mapper x2 tau in
+    let mapped_y2 = square_mapper y2 tau in
+    for i = 0 to n - 1 do 
+      for j = 0 to m - 1 do
+        w.(i).(j) <- Complex.add (Complex.add (Complex.add (Complex.add 
+          w.(i).(j) mapped_wxx.(i).(j)) mapped_wyy.(i).(j)) 
+          mapped_x2.(i)) mapped_y2.(j)
+      done
+    done
+    
+  let evolve w tau b d2 time print = 
+    let n = Array.length w in
+    let m = Array.length w.(0) in
+    let wnew = Array.copy w in
+    let steps = Float.to_int (Float.ceil (time /. tau)) in
+    for i = 0 to steps do
+      (*TODO: Implement printing*)
+      step_mutate wnew tau b d2 n m;
+    done;
+
+    wnew
+  
+end

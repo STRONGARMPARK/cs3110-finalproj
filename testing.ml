@@ -1,5 +1,5 @@
 open Graphs
-open Evolution1d;;
+open Evolution;;
 
 module Test = Graphs.Make (FreeParticleEvolutionEulers1D)
 
