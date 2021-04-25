@@ -454,8 +454,81 @@ module FreeParticleEvolutionSpectral2D : Evolution2D = struct
     (*TODO: Implement printing *)
 end
 
-(**
+let second_derivative_2d (w : (Complex.t array) array) (b : boundary_conditions)
+  (d2 : domain2d) (n : int) (m : int) (is_x : bool) =
+  if is_x then
+    let l = 
+      match fst d2 with
+      |(a, b) -> b -. a
+    in
+    let dx = l /. (Float.of_int n) in
+    let wxx = Array.make n (Array.make m Complex.zero) in
+  
+    let boundary b wxx = 
+      match b with
+      |Periodic -> 
+        for j = 0 to m - 1 do
+          wxx.(0).(j) <- 
+            Complex.div (Complex.add w.(1).(j) (Complex.neg w.(n-1).(j))) 
+              {re=2. *. dx;im=0.};
+          wxx.(n-1).(j) <- 
+            Complex.div (Complex.add w.(0).(j) (Complex.neg w.(n-2).(j))) 
+              {re=2. *. dx;im=0.}
+        done
+      |Dirichlet ->
+        ();
+    in
+    boundary b wxx;
+  
+    for i=1 to n-2 do 
+      for j=1 to m-2 do
+        wxx.(i).(j) <-
+          Complex.div (Complex.add w.(i+1).(j) (Complex.neg w.(i-1).(j))) 
+            {re=2. *. dx;im=0.};
+      done;
+    done;
+    
+    wxx
+
+  else
+    let l =
+      match snd d2 with
+      |(a, b) -> b -. a
+    in
+    let dy = l /. (Float.of_int m) in
+    let wyy = Array.make n (Array.make m Complex.zero) in
+
+    let boundary b wyy =
+      match b with
+      |Periodic -> 
+        for i = 0 to n - 1 do
+          wyy.(i).(0) <- 
+            Complex.div (Complex.add w.(i).(1) (Complex.neg w.(i).(m-1))) 
+              {re=2. *. dy;im=0.};
+          wyy.(i).(m-1) <- 
+            Complex.div (Complex.add w.(i).(0) (Complex.neg w.(i).(m-2))) 
+              {re=2. *. dy;im=0.}
+        done
+      |Dirichlet ->
+        ();
+      in
+      boundary b wyy;
+
+      for i=1 to n-2 do
+        for j=1 to m-2 do
+          wyy.(i).(j) <-
+          Complex.div (Complex.add w.(i).(j+1) (Complex.neg w.(i).(j-1))) 
+            {re=2. *. dy;im=0.};
+        done;
+      done;
+      
+      wyy
+  
+(** 
 module FreeParticleEvolutionEulers2D : Evolution2D = struct
 
+  type t = (Complex.t array) array
+
+  
 end
 *)
