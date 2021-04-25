@@ -239,11 +239,10 @@ let rec domain_one_dimension solver =
       in 
       match user_input with 
       | 968374657.0 -> print_first := true
-      | 0.0 -> print_first := true
       | x -> 
         if solver = "hoe" && x < 0.0 then 
         begin domain_first := x; finished_first := true; end
-        else if solver = "hoe" && x > 0.0 then begin print_first := true; end 
+        else if solver = "hoe" && x >= 0.0 then begin print_first := true; end 
         else begin domain_first := x; finished_first := true; end
     end
     else 
@@ -252,11 +251,10 @@ let rec domain_one_dimension solver =
       in 
       match user_input with 
       | 968374657.0 -> print_first := true
-      | 0.0 -> print_first := true
       | x -> 
         if solver = "hoe" && x < 0.0 then 
         begin domain_first := x; finished_first := true; end
-        else if solver = "hoe" && x > 0.0 then begin print_first := true; end
+        else if solver = "hoe" && x >= 0.0 then begin print_first := true; end
         else begin domain_first := x; finished_first := true; end
     done; 
   ANSITerminal.print_string [ ANSITerminal.cyan ]
