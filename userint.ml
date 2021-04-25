@@ -6,13 +6,13 @@ module GrapherFPE = Graphs.Make (FreeParticleEvolutionEulers1D)
 module GrapherHOE = Graphs.Make (HarmonicOscillatorEvolutionEulers1D)
 
 let rec graph_it_fps solver domain initial_condition boundary_condition wop = 
-  GrapherFPS.graph domain initial_condition boundary_condition
+  GrapherFPS.graph_prob domain initial_condition boundary_condition
 
 let rec graph_it_fpe solver domain initial_condition boundary_condition wop = 
-  GrapherFPE.graph domain initial_condition boundary_condition
+  GrapherFPE.graph_prob domain initial_condition boundary_condition
 
 let rec graph_it_hoe solver domain initial_condition boundary_condition wop = 
-  GrapherHOE.graph domain initial_condition boundary_condition
+  GrapherHOE.graph_prob domain initial_condition boundary_condition
 
 let rec wave_or_prob solver domain initial_condition boundary_condition = 
   ANSITerminal.print_string [ ANSITerminal.cyan ]
