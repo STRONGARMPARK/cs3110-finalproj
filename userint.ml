@@ -1,3 +1,10 @@
+open Graphs;;
+open Evolution1d;;
+
+module GrapherFPS = Graphs.Make (FreeParticleEvolutionSpectral1D)
+module GrapherFPE = Graphs.Make (FreeParticleEvolutionEulers1D)
+module GrapherHOE = Graphs.Make (HarmonicOscillatorEvolutionEulers1D)
+
 let rec wave_or_prob solver domain initial_condition boundary_condition = 
   ANSITerminal.print_string [ ANSITerminal.cyan ]
   "\n\n\nFinally, would you like the wave function or the probability distribution? Again much like before just type 1 or 2 and press enter for the option that you want.";
@@ -26,8 +33,98 @@ let rec wave_or_prob solver domain initial_condition boundary_condition =
     | "2" -> finished := true; wop := "probability"
     | _ -> print := true
   done; 
-  print_endline "your specifications have been recorded!"
+  match !wop with 
+  | "wave" -> begin
+    match solver with 
+    | "fps" -> GrapherFPS.graph_wave domain initial_condition boundary_condition
+    | "fpe" -> GrapherFPE.graph_wave domain initial_condition boundary_condition
+    | "hoe" -> GrapherHOE.graph_wave domain initial_condition boundary_condition
+    | _ -> failwith "not possible" end
+  | "probability" -> begin
+    match solver with 
+    | "fps" -> GrapherFPS.graph_prob domain initial_condition boundary_condition
+    | "fpe" -> GrapherFPE.graph_prob domain initial_condition boundary_condition
+    | "hoe" -> GrapherHOE.graph_prob domain initial_condition boundary_condition
+    | _ -> failwith "not possible" end
+  | _ -> failwith "not possible"
 
+
+let rec neumann_helper solver domain initial_condition = 
+  ANSITerminal.print_string [ ANSITerminal.cyan ]
+  "\n\n\nPlease input the derivative of the left endpoint that you would like. Has to be a complex number and it is formatted like before";
+  print_endline "\n";
+  print_string "> ";
+  let print_first = ref false in
+  let print_second = ref false in 
+  let finished_first = ref false in 
+  let finished_second = ref false in 
+  let neumann_first = ref Complex.zero in 
+  let neumann_second = ref Complex.zero in 
+  while not !finished_first do 
+    if !print_first then begin
+      ANSITerminal.print_string [ ANSITerminal.red ]
+      "\nPlease input a valid complex number (only two numbers separated by spaces)";
+      print_endline "\n";
+      print_string "> ";
+      match read_line () with 
+      | string_verse -> 
+        let clean_verse = String.trim string_verse in 
+        let list_verse_string = String.split_on_char(' ') clean_verse in 
+        let list_verse = List.map float_of_string list_verse_string in 
+        let length = List.length list_verse in 
+        if length mod 2 = 1 || length < 2 || length > 2 then 
+          begin print_first := true end 
+      else match list_verse with 
+      | x :: y :: [] -> begin neumann_first := {Complex.re = x; im = y}; finished_first := true end
+      | _ -> failwith "not possible" end
+    else 
+      match read_line () with 
+      | string_verse -> 
+        let clean_verse = String.trim string_verse in 
+        let list_verse_string = String.split_on_char(' ') clean_verse in 
+        let list_verse = List.map float_of_string list_verse_string in 
+        let length = List.length list_verse in 
+        if length mod 2 = 1 || length < 2 || length > 2 then 
+          begin print_first := true end 
+      else match list_verse with 
+      | x :: y :: [] -> begin neumann_first := {Complex.re = x; im = y}; finished_first := true end
+      | _ -> failwith "not possible"
+  done; 
+  ANSITerminal.print_string [ ANSITerminal.cyan ]
+  "\n\n\nPlease input the derivative of the right endpoint that you would like. Has to be a complex number and it is formatted like before";
+  print_endline "\n";
+  print_string "> ";
+  while not !finished_second do 
+    if !print_second then begin
+      ANSITerminal.print_string [ ANSITerminal.red ]
+      "\nPlease input a valid complex number (only two numbers separated by spaces)";
+      print_endline "\n";
+      print_string "> ";
+      match read_line () with 
+      | string_verse -> 
+        let clean_verse = String.trim string_verse in 
+        let list_verse_string = String.split_on_char(' ') clean_verse in 
+        let list_verse = List.map float_of_string list_verse_string in 
+        let length = List.length list_verse in 
+        if length mod 2 = 1 || length < 2 || length > 2 then 
+          begin print_second := true end 
+      else match list_verse with 
+      | x :: y :: [] -> begin neumann_second := {Complex.re = x; im = y}; finished_second := true end
+      | _ -> failwith "not possible" end
+    else 
+      match read_line () with 
+      | string_verse -> 
+        let clean_verse = String.trim string_verse in 
+        let list_verse_string = String.split_on_char(' ') clean_verse in 
+        let list_verse = List.map float_of_string list_verse_string in 
+        let length = List.length list_verse in 
+        if length mod 2 = 1 || length < 2 || length > 2 then 
+          begin print_second := true end 
+      else match list_verse with 
+      | x :: y :: [] -> begin neumann_second := {Complex.re = x; im = y}; finished_second := true end
+      | _ -> failwith "not possible"
+  done; 
+  wave_or_prob solver domain initial_condition (Neumann (!neumann_first, !neumann_second))
 
 let rec boundary_conditions_one_dimension solver domain initial_condition = 
   ANSITerminal.print_string [ ANSITerminal.cyan ]
@@ -43,24 +140,29 @@ let rec boundary_conditions_one_dimension solver domain initial_condition =
   print_string "> ";
   let print = ref false in 
   let finished = ref false in 
-  let boundary_condition = ref "" in 
+  let boundary_condition = ref Periodic in 
   while not !finished do 
     if !print then begin 
     ANSITerminal.print_string [ ANSITerminal.red ]
     "\nPlease input a valid option (1, 2 or 3)\n";
     match read_line () with 
-    | "1" -> finished := true; boundary_condition := "periodic"
-    | "2" -> finished := true; boundary_condition := "dirichlet"
-    | "3" -> finished := true; boundary_condition := "neumann"
+    | "1" -> finished := true; boundary_condition := Periodic
+    | "2" -> finished := true; boundary_condition := Dirichlet
+    | "3" -> finished := true; boundary_condition := Neumann (Complex.zero, Complex.zero)
     | _ -> print := true 
     end
     else 
       match read_line () with 
-      | "1" -> finished := true; boundary_condition := "periodic"
-      | "2" -> finished := true; boundary_condition := "dirichlet"
-      | "3" -> finished := true; boundary_condition := "neumann"
+      | "1" -> finished := true; boundary_condition := Periodic
+      | "2" -> finished := true; boundary_condition := Dirichlet
+      | "3" -> finished := true; boundary_condition := Neumann (Complex.zero, Complex.zero)
       | _ -> print := true 
   done;
+  match !boundary_condition with 
+  | Periodic -> wave_or_prob solver domain initial_condition Periodic
+  | Dirichlet -> wave_or_prob solver domain initial_condition Dirichlet 
+  | Neumann x -> neumann_helper solver domain initial_condition;
+  
   wave_or_prob solver domain initial_condition !boundary_condition 
 
 let rec to_complex_list list acc = 
@@ -102,13 +204,13 @@ let rec initial_function_one_dimension solver domain =
           let list_verse_string = String.split_on_char(' ') clean_verse in 
           let list_verse = List.map float_of_string list_verse_string in 
           let length = List.length list_verse in 
-          if length mod 2 = 1 then begin print := true; print_endline "this ran! 5"; end 
+          if length mod 2 = 1 then begin print := true; end 
           else if length < 8 then begin print := true; end 
           else let complex_verse = to_complex_list list_verse [] in 
             begin initial_condition := complex_verse; finished := true end
   done; 
   match solver with 
-  | "fps" -> wave_or_prob solver domain !initial_condition "periodic"
+  | "fps" -> wave_or_prob solver domain !initial_condition Periodic
   | _ -> boundary_conditions_one_dimension solver domain !initial_condition
 
 let rec domain_one_dimension solver =

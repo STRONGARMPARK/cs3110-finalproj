@@ -135,7 +135,7 @@ module FreeParticleEvolutionSpectral1D : Evolution1D = struct
     fft (normalize vec) (List.length vec)
 
   let to_list w = 
-    ifft w (List.length w)
+    ifft w (List.length w) 
 
   let probabilities w = 
     to_list w |> List.map Complex.norm2
