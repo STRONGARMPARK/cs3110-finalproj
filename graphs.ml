@@ -2,6 +2,19 @@ open Graphics
 open Evolution1d
 ;;
 
+let vop op a b = 
+  (op (fst a) (fst b), op (snd a) (snd b))
+
+let vfloat (a : (int * int)) = (((float) (fst a)), ((float) (snd a)))
+let vint (a : (float * float)) = (((int_of_float) (fst a)), ((int_of_float) (snd a)))
+
+let mag_float a = 
+  sqrt((fst a) *. (fst a) +. (snd a) *. (snd a))
+
+let mag_int a = 
+  let fa = vfloat a in
+  mag_float fa
+
 let draw_text str x y = 
   let _ = moveto x y in
   draw_string str
@@ -17,6 +30,22 @@ let tick_v len opx opy sx x =
   if x <> 0 then 
     let _ = draw_poly_line [|(opx + x * sx, opy - len / 2);(opx + x * sx, opy + len / 2)|] in
     draw_text (string_of_int x) (opx + x * sx) (opy - len / 2 - 15)
+
+let rec dotted_line_section size space p2 cur = 
+  let dir = vop ( -. ) (vfloat p2) (vfloat cur) in
+  let m = mag_float dir in
+  let dist_to_next = vop ( /. ) dir (m,m) |> vop ( *. ) (vfloat (size, size)) in
+  let next = vop ( + ) cur (vint dist_to_next) in
+  if mag_int (vop ( - ) p2 next) > 0. then
+    let _ = draw_poly_line [|cur;next|] in
+    let dist_to_next = vop ( /. ) dir (m,m) |> vop ( *. ) (vfloat (size+space, size+space)) in
+    let next = vop ( + ) cur (vint dist_to_next) in
+    dotted_line_section size space p2 next
+  else ""
+
+
+let dotted_line size space p1 p2 = dotted_line_section size space p2 p1
+
 
 module type Graph = sig
   val graph_prob : Evolution1d.domain -> Complex.t list -> string -> unit
@@ -124,8 +153,11 @@ functor (Solver : Evolution1D) -> struct
       
         let numPoints = List.length prob in
         let spaceBetween = (float) lengthdomain /. (float) numPoints in
-    
+
+        let max = ref 0. in
+
         let _ = List.mapi (fun i p ->
+            if p > !max then max := p;
             let x = int_of_float ((fst domain +. spaceBetween *. (float) i) *. (float_of_int sx)) + opx in
             let y = opy in
             let h = int_of_float (p *. (float_of_int sy)) in
@@ -134,6 +166,10 @@ functor (Solver : Evolution1D) -> struct
             (* let _ = draw_text (string_of_float p) x (y + h + 5) in *)
             p
           ) prob in
+
+        let max_p = opy + int_of_float (!max *. (float) sy) in
+        let _ = dotted_line 5 10 (0, max_p) (size_x (), max_p) in
+        let _ = draw_text (string_of_float !max) 10 (max_p + 10) in
     
         set_color black;
       done
