@@ -21,13 +21,7 @@ let rec wave_or_prob solver domain initial_condition boundary_condition =
   while not !finished do 
     if !print then begin 
     ANSITerminal.print_string [ ANSITerminal.red ]
-    "\nPlease input a valid option (1 or 2)\n";
-    match read_line () with 
-    | "1" -> finished := true; wop := "wave"
-    | "2" -> finished := true; wop := "probability"
-    | _ -> print := true
-    end 
-  else 
+    "\nPlease input a valid option (1 or 2)\n"; end else ();
     match read_line () with 
     | "1" -> finished := true; wop := "wave"
     | "2" -> finished := true; wop := "probability"
@@ -65,7 +59,7 @@ let rec neumann_helper solver domain initial_condition =
       ANSITerminal.print_string [ ANSITerminal.red ]
       "\nPlease input a valid complex number (only two numbers separated by spaces)";
       print_endline "\n";
-      print_string "> ";
+      print_string "> "; end else ();
       match read_line () with 
       | string_verse -> 
         let clean_verse = String.trim string_verse in 
@@ -76,19 +70,7 @@ let rec neumann_helper solver domain initial_condition =
           begin print_first := true end 
       else match list_verse with 
       | x :: y :: [] -> begin neumann_first := {Complex.re = x; im = y}; finished_first := true end
-      | _ -> failwith "not possible" end
-    else 
-      match read_line () with 
-      | string_verse -> 
-        let clean_verse = String.trim string_verse in 
-        let list_verse_string = String.split_on_char(' ') clean_verse in 
-        let list_verse = List.map float_of_string list_verse_string in 
-        let length = List.length list_verse in 
-        if length mod 2 = 1 || length < 2 || length > 2 then 
-          begin print_first := true end 
-      else match list_verse with 
-      | x :: y :: [] -> begin neumann_first := {Complex.re = x; im = y}; finished_first := true end
-      | _ -> failwith "not possible"
+      | _ -> failwith "not possible" 
   done; 
   ANSITerminal.print_string [ ANSITerminal.cyan ]
   "\n\n\nPlease input the derivative of the right endpoint that you would like. Has to be a complex number and it is formatted like before";
@@ -99,7 +81,7 @@ let rec neumann_helper solver domain initial_condition =
       ANSITerminal.print_string [ ANSITerminal.red ]
       "\nPlease input a valid complex number (only two numbers separated by spaces)";
       print_endline "\n";
-      print_string "> ";
+      print_string "> "; end else ();
       match read_line () with 
       | string_verse -> 
         let clean_verse = String.trim string_verse in 
@@ -110,19 +92,7 @@ let rec neumann_helper solver domain initial_condition =
           begin print_second := true end 
       else match list_verse with 
       | x :: y :: [] -> begin neumann_second := {Complex.re = x; im = y}; finished_second := true end
-      | _ -> failwith "not possible" end
-    else 
-      match read_line () with 
-      | string_verse -> 
-        let clean_verse = String.trim string_verse in 
-        let list_verse_string = String.split_on_char(' ') clean_verse in 
-        let list_verse = List.map float_of_string list_verse_string in 
-        let length = List.length list_verse in 
-        if length mod 2 = 1 || length < 2 || length > 2 then 
-          begin print_second := true end 
-      else match list_verse with 
-      | x :: y :: [] -> begin neumann_second := {Complex.re = x; im = y}; finished_second := true end
-      | _ -> failwith "not possible"
+      | _ -> failwith "not possible" 
   done; 
   wave_or_prob solver domain initial_condition (Neumann (!neumann_first, !neumann_second))
 
@@ -144,19 +114,12 @@ let rec boundary_conditions_one_dimension solver domain initial_condition =
   while not !finished do 
     if !print then begin 
     ANSITerminal.print_string [ ANSITerminal.red ]
-    "\nPlease input a valid option (1, 2 or 3)\n";
+    "\nPlease input a valid option (1, 2 or 3)\n"; end else ();
     match read_line () with 
     | "1" -> finished := true; boundary_condition := Periodic
     | "2" -> finished := true; boundary_condition := Dirichlet
     | "3" -> finished := true; boundary_condition := Neumann (Complex.zero, Complex.zero)
     | _ -> print := true 
-    end
-    else 
-      match read_line () with 
-      | "1" -> finished := true; boundary_condition := Periodic
-      | "2" -> finished := true; boundary_condition := Dirichlet
-      | "3" -> finished := true; boundary_condition := Neumann (Complex.zero, Complex.zero)
-      | _ -> print := true 
   done;
   match !boundary_condition with 
   | Periodic -> wave_or_prob solver domain initial_condition Periodic
@@ -186,7 +149,7 @@ let rec initial_function_one_dimension solver domain =
       ANSITerminal.print_string [ ANSITerminal.red ]
       "\nPlease enter in a valid initial condition. As a reminder you need at least 4 complex numbers (so 8 numbers)";
       print_endline "\n";
-      print_string "> ";
+      print_string "> "; end else ();
       match read_line () with 
       | string_verse -> 
         let clean_verse = String.trim string_verse in 
@@ -196,18 +159,7 @@ let rec initial_function_one_dimension solver domain =
         if length mod 2 = 1 then begin print := true; end 
         else if length < 8 then begin print := true; end 
         else let complex_verse = to_complex_list list_verse [] in 
-          begin initial_condition := complex_verse; finished := true end end
-    else 
-        match read_line () with 
-        | string_verse -> 
-          let clean_verse = String.trim string_verse in 
-          let list_verse_string = String.split_on_char(' ') clean_verse in 
-          let list_verse = List.map float_of_string list_verse_string in 
-          let length = List.length list_verse in 
-          if length mod 2 = 1 then begin print := true; end 
-          else if length < 8 then begin print := true; end 
-          else let complex_verse = to_complex_list list_verse [] in 
-            begin initial_condition := complex_verse; finished := true end
+          begin initial_condition := complex_verse; finished := true end 
   done; 
   match solver with 
   | "fps" -> wave_or_prob solver domain !initial_condition Periodic
@@ -233,7 +185,7 @@ let rec domain_one_dimension solver =
       ANSITerminal.print_string [ ANSITerminal.green ]
       "\n*note: if you are solving the harmonic oscillator your domain has to be symmetric about 0.0.\n";
       print_endline "";
-      print_string "> ";
+      print_string "> "; end else ();
       let user_input = try float_of_string (read_line ()) with 
       | Failure x -> 968374657.0 
       in 
@@ -243,18 +195,6 @@ let rec domain_one_dimension solver =
         if solver = "hoe" && x < 0.0 then 
         begin domain_first := x; finished_first := true; end
         else if solver = "hoe" && x >= 0.0 then begin print_first := true; end 
-        else begin domain_first := x; finished_first := true; end
-    end
-    else 
-      let user_input = try float_of_string (read_line ()) with 
-      | Failure x -> 968374657.0 
-      in 
-      match user_input with 
-      | 968374657.0 -> print_first := true
-      | x -> 
-        if solver = "hoe" && x < 0.0 then 
-        begin domain_first := x; finished_first := true; end
-        else if solver = "hoe" && x >= 0.0 then begin print_first := true; end
         else begin domain_first := x; finished_first := true; end
     done; 
   ANSITerminal.print_string [ ANSITerminal.cyan ]
@@ -266,7 +206,7 @@ let rec domain_one_dimension solver =
       ANSITerminal.print_string [ ANSITerminal.red ]
       "\nPlease input a valid right bound. It has to be greater than your left bound.";
       print_endline "\n";
-      print_string "> ";
+      print_string "> "; end else ();
       let user_input = try float_of_string (read_line ()) with 
       | Failure x -> 968374657.0 
       in 
@@ -280,21 +220,6 @@ let rec domain_one_dimension solver =
         else begin print_second := true end 
         else begin domain_second := x; finished_second := true; end
         else print_second := true
-    end 
-    else
-      let user_input = try float_of_string (read_line ()) with 
-      | Failure x -> 968374657.0 
-      in 
-      match user_input with 
-      | 968374657.0 -> print_second := true
-      | x -> 
-        if x > !domain_first then 
-          if solver = "hoe" then 
-            if x = -1.0 *. !domain_first then 
-              begin domain_second := x; finished_second := true; end
-        else print_second := true
-        else begin domain_second := x; finished_second := true; end
-        else begin print_second := true end 
   done; 
   initial_function_one_dimension solver (!domain_first, !domain_second)
 
@@ -325,18 +250,12 @@ let rec solver_one_dimension x =
       ANSITerminal.print_string [ ANSITerminal.magenta ]
       "\n|> (3) Harmonic Oscillator Eulers";
       print_endline "";
-      print_string "> ";
+      print_string "> "; end else ();
       match read_line () with 
       | "1" -> finished := true; solver := "fps"; 
       | "2" -> finished := true; solver := "fpe"; 
       | "3" -> finished := true; solver := "hoe"; 
-      | _ -> print := true end
-    else 
-      match read_line () with 
-      | "1" -> finished := true; solver := "fps"; 
-      | "2" -> finished := true; solver := "fpe"; 
-      | "3" -> finished := true; solver := "hoe"; 
-      | _ -> print := true
+      | _ -> print := true;
   done;
   domain_one_dimension !solver
 
@@ -353,12 +272,8 @@ let rec dimension_starter x =
       ANSITerminal.print_string [ ANSITerminal.red ]
       "\nPlease input a valid number of dimensions (either 1 or 2)\n";
       print_endline "";
-      print_string "> ";
-      match read_line () with 
-      | "1" -> finished := true; dimension := 1;
-      | "2" -> finished := true; dimension := 2;
-      | _ -> () end 
-    else 
+      print_string "> "; 
+    end else (); 
       match read_line () with 
       | "1" -> finished := true; dimension := 1;
       | "2" -> finished := true; dimension := 2;
