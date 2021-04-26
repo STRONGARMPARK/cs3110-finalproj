@@ -1,0 +1,15 @@
+(FOR GUI)
+0. Update XQuartz to latest version and have it running.
+
+1. You need to have the graphics package installed on your system through opam.
+
+Run "opam install graphics" in the terminal and you should be good to go. 
+
+2. To actually run the GUI, and what we have so far, you can type in the 
+command "make graph" into the terminal once in base directory for this project. 
+
+3. Features: 
+
+
+(FOR EVOLUTION)
+
