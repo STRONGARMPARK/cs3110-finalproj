@@ -3,13 +3,21 @@
 
 1. You need to have the graphics package installed on your system through opam.
 
-Run "opam install graphics" in the terminal and you should be good to go. 
+Run "opam install graphics" in the terminal and you should be good to go.
 
-2. To actually run the GUI, and what we have so far, you can type in the 
-command "make graph" into the terminal once in base directory for this project. 
+2. Features: 
+    |> We have fully functional interface and graphing for 1d evoloution. 
+    Once all of the proper dependencies are solved, run "make go" while in 
+    the project folder and you should be greeted with our interface. The
+    interface itself is pretty self explanatory as we have made it that way 
+    and handles error handling and will provide helpful messages if the user
+    inputs something incorrectly. 
 
-3. Features: 
-
+    |> Once the user has decided their preferences for graphing, a graphing 
+    screen will open and it will at first be blank. All the user has to do now 
+    is press and hold any key to watch graph evolve. They can also pause it at 
+    anytime just by letting go of the key. If the user wants to quit they can 
+    just click the red x button at the top left and that should be it!
 
 (FOR EVOLUTION)
 
