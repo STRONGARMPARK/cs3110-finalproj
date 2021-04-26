@@ -9,6 +9,9 @@ module type Evolution1D = sig
 
   (** Representation type of function *)
   type t
+  
+  (** Represents maximum timestep value *)
+  val dt : float
 
   (** List to represent the different allowed 
     kinds of boundary conditions. *)
@@ -120,6 +123,8 @@ module FreeParticleEvolutionSpectral1D : Evolution1D = struct
     wave function. *)
   type t = Complex.t list
 
+  let dt = 0.01
+
   let boundary_condition = [Periodic]
   
   (** [normalize vec] returns vec normalized to a norm of 1.*)
@@ -196,6 +201,8 @@ module FreeParticleEvolutionEulers1D = struct
   
   type t = Complex.t array
 
+  let dt = 0.0001
+
   (** Allowed boundary conditions. Must feed dummy values to constructor 
     Neumann to properly type check. You may ignore those values. *)
   let boundary_condition = [Periodic; Dirichlet; 
@@ -206,8 +213,8 @@ module FreeParticleEvolutionEulers1D = struct
   let from_list vec = 
     normalize vec |> Array.of_list
   
-  let to_list = 
-    Array.to_list
+  let to_list w = 
+    Array.to_list w |> normalize
   
   let probabilities w = 
     w |> to_list |> List.map Complex.norm2
@@ -259,6 +266,8 @@ module HarmonicOscillatorEvolutionEulers1D = struct
 
   type t = Complex.t array
 
+  let dt = 0.0001
+
   (** Allowed boundary conditions. Must feed dummy values to constructor 
     Neumann to properly type check. You may ignore those values. *)
   let boundary_condition = [Periodic; Dirichlet; 
@@ -269,8 +278,8 @@ module HarmonicOscillatorEvolutionEulers1D = struct
   let from_list vec = 
     normalize vec |> Array.of_list
   
-  let to_list = 
-    Array.to_list
+  let to_list w = 
+    Array.to_list w |> normalize
   
   let probabilities w = 
     w |> to_list |> List.map Complex.norm2
@@ -312,6 +321,9 @@ module type Evolution2D = sig
 
   (** Representation type of function *)
   type t
+  
+  (** Represents maximum timestep value *)
+  val dt : float
 
   (** List to represent the different allowed 
     kinds of boundary conditions. *)
@@ -401,6 +413,8 @@ module FreeParticleEvolutionSpectral2D : Evolution2D = struct
   (** AF: t represents the 2D (discrete) fourier transform of a 
     wave function. *)
   type t = (Complex.t list) list
+
+  let dt = 0.01
   
   let boundary_condition = [Periodic]
 
@@ -584,13 +598,15 @@ module FreeParticleEvolutionEulers2D : Evolution2D = struct
 
   type t = (Complex.t array) array
 
+  let dt = 0.0001
+
   let boundary_condition = [Periodic; Dirichlet]
 
   let normalize = FreeParticleEvolutionSpectral2D.normalize
   
   let from_list = lst2d_to_arr2d
 
-  let to_list = arr2d_to_lst2d
+  let to_list w = arr2d_to_lst2d w |> normalize
 
   let probabilities w = 
     w |> to_list |> probs
@@ -635,13 +651,15 @@ module HarmonicOscillatorEvolutionEulers2D : Evolution2D = struct
 
   type t = (Complex.t array) array
 
+  let dt = 0.0001
+
   let boundary_condition = FreeParticleEvolutionEulers2D.boundary_condition
 
   let normalize = FreeParticleEvolutionSpectral2D.normalize
 
   let from_list = lst2d_to_arr2d
 
-  let to_list = arr2d_to_lst2d
+  let to_list w = arr2d_to_lst2d w |> normalize
 
   let probabilities w = 
     w |> to_list |> probs

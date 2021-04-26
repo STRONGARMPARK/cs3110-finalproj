@@ -122,14 +122,14 @@ functor (Solver : Evolution1D) -> struct
         synchronize ();
         set_color (rgb 0 0 0);
 
-        let dt = 0.1 in
+        let deltat = 0.1 in
         t := Sys.time ();
-        t_elapsed := !t_elapsed +. dt;
+        t_elapsed := !t_elapsed +. deltat;
         let _ = draw_text ("Time: " ^ string_of_float !t_elapsed) (5) (size_y () - 15) in
 
         let rep = S.from_list !w in
         let prob = S.probabilities rep in
-        w := S.evolve rep 0.01 boundary_condition domain dt false |> S.to_list;
+        w := S.evolve rep S.dt boundary_condition domain deltat false |> S.to_list;
       
         let numPoints = List.length prob in
         let spaceBetween = (float) lengthdomain /. (float) numPoints in
