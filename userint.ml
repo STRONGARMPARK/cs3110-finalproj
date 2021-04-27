@@ -64,7 +64,8 @@ let rec neumann_helper solver domain initial_condition =
       | string_verse -> 
         let clean_verse = String.trim string_verse in 
         let list_verse_string = String.split_on_char(' ') clean_verse in 
-        let list_verse = List.map float_of_string list_verse_string in 
+        let list_verse = try List.map float_of_string list_verse_string with 
+      | Failure x -> [1.232323] in 
         let length = List.length list_verse in 
         if length mod 2 = 1 || length < 2 || length > 2 then 
           begin print_first := true end 
@@ -114,7 +115,9 @@ let rec boundary_conditions_one_dimension solver domain initial_condition =
   while not !finished do 
     if !print then begin 
     ANSITerminal.print_string [ ANSITerminal.red ]
-    "\nPlease input a valid option (1, 2 or 3)\n"; end else ();
+    "\nPlease input a valid option (1, 2 or 3)\n"; 
+    print_endline "\n";
+    print_string "> ";end else ();
     match read_line () with 
     | "1" -> finished := true; boundary_condition := Periodic
     | "2" -> finished := true; boundary_condition := Dirichlet
@@ -154,7 +157,8 @@ let rec initial_function_one_dimension solver domain =
       | string_verse -> 
         let clean_verse = String.trim string_verse in 
         let list_verse_string = String.split_on_char(' ') clean_verse in 
-        let list_verse = List.map float_of_string list_verse_string in 
+        let list_verse = try List.map float_of_string list_verse_string with 
+        | Failure x -> [1.2232323] in 
         let length = List.length list_verse in 
         if length mod 2 = 1 then begin print := true; end 
         else if length < 8 then begin print := true; end 

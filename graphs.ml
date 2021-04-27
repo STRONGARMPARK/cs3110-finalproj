@@ -68,6 +68,8 @@ functor (Solver : Evolution1D) -> struct
     let opx = 350 in let opy = 350 in
     let sx = 40 in let sy = 320 in
     let _ = setup_graph width height opx opy sx sy 4 in
+    let _ = draw_text "x" (size_x () - 15) (opy - 15) in
+    let _ = draw_text "i" (opx + 10) (size_y () - 15) in
 
     let t = ref 0. in
     let t_elapsed = ref 0. in
@@ -82,12 +84,12 @@ functor (Solver : Evolution1D) -> struct
         synchronize ();
         set_color (rgb 0 0 0);
 
-        let dt = 0.1 in
+        (* let dt = 0.1 in *)
         t := Sys.time ();
         t_elapsed := !t_elapsed +. 0.1;
         let _ = draw_text ("Time: " ^ string_of_float !t_elapsed) (5) (size_y () - 15) in
         let rep = S.from_list !w in
-        w := S.evolve rep 0.01 boundary_condition domain dt false |> S.to_list;
+        w := S.evolve rep 0.08 boundary_condition domain 1.0 false |> S.to_list;
     
         let _ = List.mapi (fun i (point : Complex.t) ->
             let x = opx + int_of_float (point.re *. (float) sx) in
@@ -107,6 +109,8 @@ functor (Solver : Evolution1D) -> struct
     let opx = 350 in let opy = 350 in
     let sx = 40 in let sy = 320 in
     let _ = setup_graph width height opx opy sx sy 4 in
+    let _ = draw_text "x" (size_x () - 15) (opy - 15) in
+    let _ = draw_text "y" (opx + 10) (size_y () - 15) in
 
     let t = ref 0. in
     let t_elapsed = ref 0. in
@@ -129,7 +133,7 @@ functor (Solver : Evolution1D) -> struct
 
         let rep = S.from_list !w in
         let prob = S.probabilities rep in
-        w := S.evolve rep S.dt boundary_condition domain deltat false |> S.to_list;
+        w := S.evolve rep 0.08 boundary_condition domain 1.0 false |> S.to_list;
       
         let numPoints = List.length prob in
         let spaceBetween = (float) lengthdomain /. (float) numPoints in
