@@ -5,6 +5,9 @@ module GrapherFPS = Graphs.Make (FreeParticleEvolutionSpectral1D)
 module GrapherFPE = Graphs.Make (FreeParticleEvolutionEulers1D)
 module GrapherHOE = Graphs.Make (HarmonicOscillatorEvolutionEulers1D)
 
+let rec print_thank_you x = 
+  print_endline "Thank you for using our application!"
+
 let rec print_initial_condition_helper lst number acc = 
   match number with 
   | 3 -> acc ^ "..." 
@@ -74,6 +77,7 @@ let rec wave_or_prob dimension solver domain initial_condition boundary_conditio
     ANSITerminal.print_string [ ANSITerminal.red ]
     "\nPlease input a valid option (1 or 2)\n"; end else ();
     match read_line () with 
+    | "q" -> print_thank_you 1; Stdlib.exit 0;
     | "1" -> finished := true; wop := "wave"
     | "2" -> finished := true; wop := "probability"
     | _ -> print := true
@@ -113,6 +117,7 @@ let rec neumann_helper dimension solver domain initial_condition =
       print_endline "\n";
       print_string "> "; end else ();
       match read_line () with 
+      | "q" -> print_thank_you 1; Stdlib.exit 0;
       | string_verse -> 
         let clean_verse = String.trim string_verse in 
         let list_verse_string = String.split_on_char(' ') clean_verse in 
@@ -136,10 +141,12 @@ let rec neumann_helper dimension solver domain initial_condition =
       print_endline "\n";
       print_string "> "; end else ();
       match read_line () with 
+      | "q" -> print_thank_you 1; Stdlib.exit 0;
       | string_verse -> 
         let clean_verse = String.trim string_verse in 
         let list_verse_string = String.split_on_char(' ') clean_verse in 
-        let list_verse = List.map float_of_string list_verse_string in 
+        let list_verse = try List.map float_of_string list_verse_string with 
+      | Failure x -> [1.232323] in 
         let length = List.length list_verse in 
         if length mod 2 = 1 || length < 2 || length > 2 then 
           begin print_second := true end 
@@ -176,6 +183,7 @@ let rec boundary_conditions_one_dimension dimension solver domain initial_condit
     | "1" -> finished := true; boundary_condition := Periodic
     | "2" -> finished := true; boundary_condition := Dirichlet
     | "3" -> finished := true; boundary_condition := Neumann (Complex.zero, Complex.zero)
+    | "q" -> print_thank_you 1; Stdlib.exit 0;
     | _ -> print := true 
   done;
   match !boundary_condition with 
@@ -210,6 +218,7 @@ let rec initial_function_one_dimension dimension solver domain =
       print_endline "\n";
       print_string "> "; end else ();
       match read_line () with 
+      | "q" -> print_thank_you 1; Stdlib.exit 0;
       | string_verse -> 
         let clean_verse = String.trim string_verse in 
         let list_verse_string = String.split_on_char(' ') clean_verse in 
@@ -319,6 +328,7 @@ let rec solver_one_dimension dimension =
       | "1" -> finished := true; solver := "fps"; 
       | "2" -> finished := true; solver := "fpe"; 
       | "3" -> finished := true; solver := "hoe"; 
+      | "q" -> print_thank_you 1; Stdlib.exit 0;
       | _ -> print := true;
   done;
   domain_one_dimension dimension !solver
@@ -341,6 +351,7 @@ let rec dimension_starter x =
       match read_line () with 
       | "1" -> finished := true; dimension := 1;
       | "2" -> finished := true; dimension := 2;
+      | "q" -> print_thank_you 1; Stdlib.exit 0;
       | _ -> print := true;
   done; 
   match !dimension with 
@@ -352,6 +363,8 @@ let rec dimension_starter x =
 let rec main () =
   ANSITerminal.print_string [ ANSITerminal.magenta ]
     "\n\nWelcome to the Schrödinger equation solver!\n";
+  ANSITerminal.print_string [ ANSITerminal.blue ]
+  "\nYou can type in 'q' to quit anytime!\n";
   ANSITerminal.print_string [ ANSITerminal.cyan ]
     "\nPress enter to begin.\n";
   print_endline "";
