@@ -5,7 +5,58 @@ module GrapherFPS = Graphs.Make (FreeParticleEvolutionSpectral1D)
 module GrapherFPE = Graphs.Make (FreeParticleEvolutionEulers1D)
 module GrapherHOE = Graphs.Make (HarmonicOscillatorEvolutionEulers1D)
 
-let rec wave_or_prob solver domain initial_condition boundary_condition = 
+let rec print_initial_condition_helper lst number acc = 
+  match number with 
+  | 3 -> acc ^ "..." 
+  | _ -> 
+    match lst with 
+    | [] -> acc
+    | x :: xs -> 
+      let real = string_of_float x.Complex.re in 
+      let imaginary = string_of_float x.Complex.im in 
+      print_initial_condition_helper xs (number + 1) (acc ^ "(" ^ real ^ "+ i" ^ imaginary ^ ")" ^ ",")
+
+let rec print_user_preference dimension solver domain initial_condition boundary_condition print_boundary print_neumann =
+  begin 
+  let _ =
+    match dimension with 
+    | 1 -> print_endline "Dimensions: 1"
+    | 2 -> print_endline "Dimensison: 2"
+    | _ -> () in
+  let _ = match solver with 
+  | "fps" -> 
+    print_endline "Solver: Free Particle Spectral"; 
+  | "fpe" -> 
+    print_endline "Solver: Free Particle Eulers";
+  | "hoe" -> 
+    print_endline "Solver: Harmonic Oscillator";
+  | _ -> (); in 
+  let _ = match domain with 
+  | (x,y) -> 
+    if x = 0.0 && y = 0.0 then () else begin 
+    print_string "Domain ("; print_float x; print_string ", "; print_float y; print_endline ")"; end in 
+  let _ = match initial_condition with
+  | [] -> ();
+  | _ -> 
+    print_string "Initial Condition: "; print_endline (print_initial_condition_helper (List.rev initial_condition) 0 ""); in 
+  let _ = match boundary_condition with 
+  | Periodic -> 
+    if not print_boundary then () else 
+    print_endline "Boundary condition: Periodic";
+  | Neumann (x,y) -> 
+    if not print_neumann then () else begin 
+    print_string "Boundary condition: Neumann ";
+    print_string "("; print_float x.Complex.re; print_string "+ i"; print_float x.Complex.im; print_string ")";
+    print_string ", ("; print_float y.Complex.re; print_string "+ i"; print_float y.Complex.im; print_string ")"   end 
+  | Dirichlet -> 
+    if not print_boundary then () else
+    print_endline "Boundary condition: Dirichlet"; in 
+  ();
+  end 
+
+let rec wave_or_prob dimension solver domain initial_condition boundary_condition = 
+  print_endline "\n\n\n\n\n\n";
+  print_user_preference dimension solver domain initial_condition boundary_condition true true;
   ANSITerminal.print_string [ ANSITerminal.cyan ]
   "\n\n\nFinally, would you like the wave function or the probability distribution? Again much like before just type 1 or 2 and press enter for the option that you want.";
   print_endline "";
@@ -42,8 +93,9 @@ let rec wave_or_prob solver domain initial_condition boundary_condition =
     | _ -> failwith "not possible" end
   | _ -> failwith "not possible"
 
-
-let rec neumann_helper solver domain initial_condition = 
+let rec neumann_helper dimension solver domain initial_condition = 
+  print_endline "\n\n\n\n\n\n";
+  print_user_preference dimension solver domain initial_condition Periodic false false;
   ANSITerminal.print_string [ ANSITerminal.cyan ]
   "\n\n\nPlease input the derivative of the left endpoint that you would like. Has to be a complex number and it is formatted like before";
   print_endline "\n";
@@ -95,9 +147,11 @@ let rec neumann_helper solver domain initial_condition =
       | x :: y :: [] -> begin neumann_second := {Complex.re = x; im = y}; finished_second := true end
       | _ -> failwith "not possible" 
   done; 
-  wave_or_prob solver domain initial_condition (Neumann (!neumann_first, !neumann_second))
+  wave_or_prob dimension solver domain initial_condition (Neumann (!neumann_first, !neumann_second))
 
-let rec boundary_conditions_one_dimension solver domain initial_condition = 
+let rec boundary_conditions_one_dimension dimension solver domain initial_condition = 
+  print_endline "\n\n\n\n\n\n";
+  print_user_preference dimension solver domain initial_condition Periodic false false;
   ANSITerminal.print_string [ ANSITerminal.cyan ]
   "\n\n\nPlease input the boundary condition that you want to have. Much like the solver just type in the number of the option that you want from the list.";
   print_endline "";
@@ -125,11 +179,11 @@ let rec boundary_conditions_one_dimension solver domain initial_condition =
     | _ -> print := true 
   done;
   match !boundary_condition with 
-  | Periodic -> wave_or_prob solver domain initial_condition Periodic
-  | Dirichlet -> wave_or_prob solver domain initial_condition Dirichlet 
-  | Neumann x -> neumann_helper solver domain initial_condition;
+  | Periodic -> wave_or_prob dimension solver domain initial_condition Periodic
+  | Dirichlet -> wave_or_prob dimension solver domain initial_condition Dirichlet 
+  | Neumann x -> neumann_helper dimension solver domain initial_condition;
   
-  wave_or_prob solver domain initial_condition !boundary_condition 
+  wave_or_prob dimension solver domain initial_condition !boundary_condition 
 
 let rec to_complex_list list acc = 
   match list with
@@ -137,7 +191,9 @@ let rec to_complex_list list acc =
   | x :: y :: xs -> to_complex_list xs ({Complex.re = x; im = y} :: acc)
   | _ -> failwith "not possible"
 
-let rec initial_function_one_dimension solver domain = 
+let rec initial_function_one_dimension dimension solver domain = 
+  print_endline "\n\n\n\n\n\n";
+  print_user_preference dimension solver domain [] Periodic false false;
   ANSITerminal.print_string [ ANSITerminal.cyan ]
   "\n\n\nPlease input your initial function. You need to input at least 4 complex values.";
   ANSITerminal.print_string [ ANSITerminal.green ]
@@ -166,10 +222,12 @@ let rec initial_function_one_dimension solver domain =
           begin initial_condition := complex_verse; finished := true end 
   done; 
   match solver with 
-  | "fps" -> wave_or_prob solver domain !initial_condition Periodic
-  | _ -> boundary_conditions_one_dimension solver domain !initial_condition
+  | "fps" -> wave_or_prob dimension solver domain !initial_condition Periodic
+  | _ -> boundary_conditions_one_dimension dimension solver domain !initial_condition
 
-let rec domain_one_dimension solver =
+let rec domain_one_dimension dimension solver =
+  print_endline "\n\n\n\n\n\n";
+  print_user_preference dimension solver (0.0, 0.0) [] Periodic false false;
   let print_first = ref false in
   let print_second = ref false in 
   let finished_first = ref false in 
@@ -225,10 +283,12 @@ let rec domain_one_dimension solver =
         else begin domain_second := x; finished_second := true; end
         else print_second := true
   done; 
-  initial_function_one_dimension solver (!domain_first, !domain_second)
+  initial_function_one_dimension dimension solver (!domain_first, !domain_second)
 
 
-let rec solver_one_dimension x = 
+let rec solver_one_dimension dimension = 
+  print_endline "\n\n\n\n\n\n";
+  print_user_preference dimension "no" (0.0, 0.0) [] Periodic false false;
   ANSITerminal.print_string [ ANSITerminal.cyan ]
   "\n\n\nWhich solver would you like to use (type in 1, 2, or 3 to choose from the options):";
   print_endline "";
@@ -261,7 +321,7 @@ let rec solver_one_dimension x =
       | "3" -> finished := true; solver := "hoe"; 
       | _ -> print := true;
   done;
-  domain_one_dimension !solver
+  domain_one_dimension dimension !solver
 
 let rec dimension_starter x = 
   ANSITerminal.print_string [ ANSITerminal.cyan ]

@@ -133,7 +133,7 @@ functor (Solver : Evolution1D) -> struct
 
         let rep = S.from_list !w in
         let prob = S.probabilities rep in
-        w := S.evolve rep 0.08 boundary_condition domain 1.0 false |> S.to_list;
+        w := S.evolve rep 0.08 boundary_condition domain 0.2 false |> S.to_list;
       
         let numPoints = List.length prob in
         let spaceBetween = (float) lengthdomain /. (float) numPoints in
