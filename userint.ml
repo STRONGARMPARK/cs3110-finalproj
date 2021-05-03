@@ -8,7 +8,7 @@ module GrapherHOE = Graphs.Make (HarmonicOscillatorEvolutionEulers1D)
 let rec print_thank_you x = 
   print_endline "Thank you for using our application!"
 
-let rec print_initial_condition_helper lst number acc = 
+and print_initial_condition_helper lst number acc = 
   match number with 
   | 3 -> acc ^ "..." 
   | _ -> 
@@ -17,9 +17,9 @@ let rec print_initial_condition_helper lst number acc =
     | x :: xs -> 
       let real = string_of_float x.Complex.re in 
       let imaginary = string_of_float x.Complex.im in 
-      print_initial_condition_helper xs (number + 1) (acc ^ "(" ^ real ^ "+ i" ^ imaginary ^ ")" ^ ",")
+      print_initial_condition_helper xs (number + 1) (acc ^ "(" ^ real ^ "+ i" ^ imaginary ^ ")" ^ ", ")
 
-let rec print_user_preference dimension solver domain initial_condition boundary_condition print_boundary print_neumann =
+and print_user_preference dimension solver domain initial_condition boundary_condition print_boundary print_neumann =
   begin 
   let _ =
     match dimension with 
@@ -57,7 +57,7 @@ let rec print_user_preference dimension solver domain initial_condition boundary
   ();
   end 
 
-let rec wave_or_prob dimension solver domain initial_condition boundary_condition = 
+and wave_or_prob dimension solver domain initial_condition boundary_condition = 
   print_endline "\n\n\n\n\n\n";
   print_user_preference dimension solver domain initial_condition boundary_condition true true;
   ANSITerminal.print_string [ ANSITerminal.cyan ]
@@ -78,6 +78,7 @@ let rec wave_or_prob dimension solver domain initial_condition boundary_conditio
     "\nPlease input a valid option (1 or 2)\n"; end else ();
     match read_line () with 
     | "q" -> print_thank_you 1; Stdlib.exit 0;
+    | "b" -> boundary_conditions_one_dimension dimension solver domain initial_condition
     | "1" -> finished := true; wop := "wave"
     | "2" -> finished := true; wop := "probability"
     | _ -> print := true
@@ -97,7 +98,7 @@ let rec wave_or_prob dimension solver domain initial_condition boundary_conditio
     | _ -> failwith "not possible" end
   | _ -> failwith "not possible"
 
-let rec neumann_helper dimension solver domain initial_condition = 
+and neumann_helper dimension solver domain initial_condition = 
   print_endline "\n\n\n\n\n\n";
   print_user_preference dimension solver domain initial_condition Periodic false false;
   ANSITerminal.print_string [ ANSITerminal.cyan ]
@@ -118,6 +119,7 @@ let rec neumann_helper dimension solver domain initial_condition =
       print_string "> "; end else ();
       match read_line () with 
       | "q" -> print_thank_you 1; Stdlib.exit 0;
+      | "b" -> boundary_conditions_one_dimension dimension solver domain initial_condition
       | string_verse -> 
         let clean_verse = String.trim string_verse in 
         let list_verse_string = String.split_on_char(' ') clean_verse in 
@@ -142,6 +144,7 @@ let rec neumann_helper dimension solver domain initial_condition =
       print_string "> "; end else ();
       match read_line () with 
       | "q" -> print_thank_you 1; Stdlib.exit 0;
+      | "b" -> neumann_helper dimension solver domain initial_condition
       | string_verse -> 
         let clean_verse = String.trim string_verse in 
         let list_verse_string = String.split_on_char(' ') clean_verse in 
@@ -156,7 +159,7 @@ let rec neumann_helper dimension solver domain initial_condition =
   done; 
   wave_or_prob dimension solver domain initial_condition (Neumann (!neumann_first, !neumann_second))
 
-let rec boundary_conditions_one_dimension dimension solver domain initial_condition = 
+and boundary_conditions_one_dimension dimension solver domain initial_condition = 
   print_endline "\n\n\n\n\n\n";
   print_user_preference dimension solver domain initial_condition Periodic false false;
   ANSITerminal.print_string [ ANSITerminal.cyan ]
@@ -184,6 +187,7 @@ let rec boundary_conditions_one_dimension dimension solver domain initial_condit
     | "2" -> finished := true; boundary_condition := Dirichlet
     | "3" -> finished := true; boundary_condition := Neumann (Complex.zero, Complex.zero)
     | "q" -> print_thank_you 1; Stdlib.exit 0;
+    | "b" -> initial_function_one_dimension dimension solver domain
     | _ -> print := true 
   done;
   match !boundary_condition with 
@@ -193,13 +197,13 @@ let rec boundary_conditions_one_dimension dimension solver domain initial_condit
   
   wave_or_prob dimension solver domain initial_condition !boundary_condition 
 
-let rec to_complex_list list acc = 
+and to_complex_list list acc = 
   match list with
   | [] -> acc 
   | x :: y :: xs -> to_complex_list xs ({Complex.re = x; im = y} :: acc)
   | _ -> failwith "not possible"
 
-let rec initial_function_one_dimension dimension solver domain = 
+and initial_function_one_dimension dimension solver domain = 
   print_endline "\n\n\n\n\n\n";
   print_user_preference dimension solver domain [] Periodic false false;
   ANSITerminal.print_string [ ANSITerminal.cyan ]
@@ -219,6 +223,7 @@ let rec initial_function_one_dimension dimension solver domain =
       print_string "> "; end else ();
       match read_line () with 
       | "q" -> print_thank_you 1; Stdlib.exit 0;
+      | "b" -> domain_one_dimension dimension solver
       | string_verse -> 
         let clean_verse = String.trim string_verse in 
         let list_verse_string = String.split_on_char(' ') clean_verse in 
@@ -234,7 +239,7 @@ let rec initial_function_one_dimension dimension solver domain =
   | "fps" -> wave_or_prob dimension solver domain !initial_condition Periodic
   | _ -> boundary_conditions_one_dimension dimension solver domain !initial_condition
 
-let rec domain_one_dimension dimension solver =
+and domain_one_dimension dimension solver =
   print_endline "\n\n\n\n\n\n";
   print_user_preference dimension solver (0.0, 0.0) [] Periodic false false;
   let print_first = ref false in
@@ -257,7 +262,12 @@ let rec domain_one_dimension dimension solver =
       "\n*note: if you are solving the harmonic oscillator your domain has to be symmetric about 0.0.\n";
       print_endline "";
       print_string "> "; end else ();
-      let user_input = try float_of_string (read_line ()) with 
+      let user_input_first = read_line () in 
+      match user_input_first with 
+      | "q" -> print_thank_you 1; Stdlib.exit 0;
+      | "b" -> solver_one_dimension dimension
+      | x -> begin 
+      let user_input = try float_of_string x with 
       | Failure x -> 968374657.0 
       in 
       match user_input with 
@@ -266,7 +276,7 @@ let rec domain_one_dimension dimension solver =
         if solver = "hoe" && x < 0.0 then 
         begin domain_first := x; finished_first := true; end
         else if solver = "hoe" && x >= 0.0 then begin print_first := true; end 
-        else begin domain_first := x; finished_first := true; end
+        else begin domain_first := x; finished_first := true; end end 
     done; 
   ANSITerminal.print_string [ ANSITerminal.cyan ]
   "\nNow please input a right bound. It has to be greater than your left bound.";
@@ -278,7 +288,12 @@ let rec domain_one_dimension dimension solver =
       "\nPlease input a valid right bound. It has to be greater than your left bound.";
       print_endline "\n";
       print_string "> "; end else ();
-      let user_input = try float_of_string (read_line ()) with 
+      let user_input_first = read_line () in 
+      match user_input_first with 
+      | "q" -> print_thank_you 1; Stdlib.exit 0; 
+      | "b" -> domain_one_dimension dimension solver 
+      | x -> begin 
+      let user_input = try float_of_string x with 
       | Failure x -> 968374657.0 
       in 
       match user_input with 
@@ -290,12 +305,12 @@ let rec domain_one_dimension dimension solver =
               begin domain_second := x; finished_second := true; end
         else begin print_second := true end 
         else begin domain_second := x; finished_second := true; end
-        else print_second := true
+        else print_second := true end 
   done; 
   initial_function_one_dimension dimension solver (!domain_first, !domain_second)
 
 
-let rec solver_one_dimension dimension = 
+and solver_one_dimension dimension = 
   print_endline "\n\n\n\n\n\n";
   print_user_preference dimension "no" (0.0, 0.0) [] Periodic false false;
   ANSITerminal.print_string [ ANSITerminal.cyan ]
@@ -329,11 +344,12 @@ let rec solver_one_dimension dimension =
       | "2" -> finished := true; solver := "fpe"; 
       | "3" -> finished := true; solver := "hoe"; 
       | "q" -> print_thank_you 1; Stdlib.exit 0;
+      | "b" -> dimension_starter 1
       | _ -> print := true;
   done;
   domain_one_dimension dimension !solver
 
-let rec dimension_starter x = 
+and dimension_starter x = 
   ANSITerminal.print_string [ ANSITerminal.cyan ]
   "\n\n\nPlease type in how many dimensions you would like us to solve in.\n";
   print_endline "";
@@ -352,6 +368,7 @@ let rec dimension_starter x =
       | "1" -> finished := true; dimension := 1;
       | "2" -> finished := true; dimension := 2;
       | "q" -> print_thank_you 1; Stdlib.exit 0;
+      | "b" -> main ();
       | _ -> print := true;
   done; 
   match !dimension with 
@@ -360,11 +377,11 @@ let rec dimension_starter x =
   | _ -> failwith ""
 
 
-let rec main () =
+and main () =
   ANSITerminal.print_string [ ANSITerminal.magenta ]
     "\n\nWelcome to the Schrödinger equation solver!\n";
   ANSITerminal.print_string [ ANSITerminal.blue ]
-  "\nYou can type in 'q' to quit anytime!\n";
+  "\nYou can type in 'q' to quit and 'b' to go back to the previous option selector!\n";
   ANSITerminal.print_string [ ANSITerminal.cyan ]
     "\nPress enter to begin.\n";
   print_endline "";
