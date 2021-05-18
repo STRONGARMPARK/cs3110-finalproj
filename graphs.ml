@@ -105,9 +105,12 @@ functor (Solver : Evolution1D) -> struct
 
   let graph_prob domain initial_condition boundary_condition = 
 
+    let domain = domain in
+    let lengthdomain = (int_of_float) (snd domain -. fst domain) in
+
     let width = 700 in let height = 700 in 
     let opx = 350 in let opy = 350 in
-    let sx = 40 in let sy = 320 in
+    let sx = int_of_float ((float) (width/lengthdomain) *. 0.9) in let sy = 320 in
     let _ = setup_graph width height opx opy sx sy 4 in
     let _ = draw_text "x" (size_x () - 15) (opy - 15) in
     let _ = draw_text "y" (opx + 10) (size_y () - 15) in
@@ -115,8 +118,6 @@ functor (Solver : Evolution1D) -> struct
     let t = ref 0. in
     let t_elapsed = ref 0. in
     let w = ref initial_condition in 
-    let domain = domain in
-    let lengthdomain = (int_of_float) (snd domain -. fst domain) in
 
     try
       while true do
@@ -138,22 +139,26 @@ functor (Solver : Evolution1D) -> struct
         let numPoints = List.length prob in
         let spaceBetween = (float) lengthdomain /. (float) numPoints in
 
-        let max = ref 0. in
+        let cur_p = ref 0. in
 
         let _ = List.mapi (fun i p ->
-            if p > !max then max := p;
+            if p > !cur_p then cur_p := p;
             let x = int_of_float ((fst domain +. spaceBetween *. (float) i) *. (float_of_int sx)) + opx in
             let y = opy in
             let h = int_of_float (p *. (float_of_int sy)) in
             let w = int_of_float (spaceBetween *. (float_of_int sx)) in
+            let gray = max (int_of_float (250. *. (float) i /. (float) numPoints)) 0 in
+            let c = rgb gray gray gray in
+            let _ = set_color c in
             let _ = fill_rect x y w h in
             (* let _ = draw_text (string_of_float p) x (y + h + 5) in *)
             p
           ) prob in
 
-        let max_p = opy + int_of_float (!max *. (float) sy) in
+        let max_p = opy + int_of_float (!cur_p *. (float) sy) in
+        let _ = set_color black in
         let _ = dotted_line 5 10 (0, max_p) (size_x (), max_p) in
-        let _ = draw_text (string_of_float !max) 10 (max_p + 10) in
+        let _ = draw_text (string_of_float !cur_p) 10 (max_p + 10) in
     
         set_color black;
       done
