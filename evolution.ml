@@ -440,7 +440,7 @@ module FreeParticleEvolutionSpectral2D : Evolution2D = struct
   
   (** [from_list mat] returns internal representation of mat, of type t.
       Precondition: mat is a Complex.t list list of length n by m, where
-      n and m are both powers of 2.*)
+      n and m are both powers of 2.*) 
   let from_list mat = 
     (mat |> normalize |> fft2) (List.length mat) (List.length (List.hd mat))
 

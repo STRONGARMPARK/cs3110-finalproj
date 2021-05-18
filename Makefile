@@ -1,4 +1,4 @@
-MODULES=evolution graphs testing
+MODULES=evolution graphs graphs2d testing
 OBJECTS=$(MODULES:=.cmo)
 MLS=$(MODULES:=.ml)
 MLIS=$(MODULES:=.mli)
