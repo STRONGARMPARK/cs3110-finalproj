@@ -126,13 +126,13 @@ let draw_box cam proj (b : box) =
 
 let box_closest_v3 (point:v3) (b:box) : v3 = 
   box_fold_left 
-  (fun a b -> let a = v3op (-.) a point in let b = v3op (-.) b point in
-    if a.x *. a.x +. a.y *. a.y > b.x *. b.x +. b.y *. b.y then a else b) 
+  (fun a b -> let pa = v3op (-.) a point in let pb = v3op (-.) b point in
+    if pa.x *. pa.x +. pa.y *. pa.y > pb.x *. pb.x +. pb.y *. pb.y then a else b) 
   point b
 
 let rec separate (boxes: box list) (cp : v3) : box list * box list = 
-  let b1 = List.filter (fun b -> dot cp (box_closest_v3 cp b) > 0.) boxes in
-  let b2 = List.filter (fun b -> dot cp (box_closest_v3 cp b) <= 0.) boxes in
+  let b1 = List.filter (fun b -> print_v3 (box_closest_v3 cp b); print_string "\n"; dot {cp with z=0.} {(box_closest_v3 cp b) with z=0.} >= 0.) boxes in
+  let b2 = List.filter (fun b -> dot {cp with z=0.;} {(box_closest_v3 cp b) with z=0.;} < 0.) boxes in
   (b1, b2)
 
 
@@ -140,8 +140,8 @@ let sort_boxes cam b =
   let cp = camera_pos cam in
   let b = List.sort (
       fun b1 b2 ->
-        let min1 = box_closest_v3 cp b1 in
-        let min2 = box_closest_v3 cp b2 in
+        let min1 = v3op (-.) cp (box_closest_v3 cp b1) in
+        let min2 = v3op (-.) cp (box_closest_v3 cp b2) in
         if mag min1 < mag min2 then 1
         else if mag min1 = mag min2 then 0
         else -1
@@ -215,38 +215,34 @@ let updatecam cam proj key =
             proj := camera_proj !cam;)
   | _ -> ()
 
-let if_clear_graph key = 
-  match key with 
-  | 'a' -> clear_graph ();
-  | 'd' -> clear_graph ();
-  | 'w' -> clear_graph ();
-  | 's' -> clear_graph ();
-  | 'r' -> clear_graph ();
-  | _ -> ()
-
 let draw_xz_axis cam proj key = 
-  let _ = remember_mode true in 
   let _ = set_color black in
-  let _ = (match key with 
-  | 'a' -> xz_axis !proj 500. 1. 1. 1.;
-  | 'd' -> xz_axis !proj 500. 1. 1. 1.;
-  | 'w' -> xz_axis !proj 500. 1. 1. 1.;
-  | 's' -> xz_axis !proj 500. 1. 1. 1.;
-  | 'r' -> xz_axis !proj 500. 1. 1. 1.;
-  | _ -> ()) in
-  remember_mode false
-
+  match key with 
+  | 'a' -> (remember_mode true;
+            clear_graph ();
+            xz_axis !proj 500. 1. 1. 1.;
+            remember_mode false)
+  | 'd' -> (remember_mode true;
+            clear_graph ();
+            xz_axis !proj 500. 1. 1. 1.;
+            remember_mode false;)
+  | 'w' -> (remember_mode true;
+            clear_graph ();
+            xz_axis !proj 500. 1. 1. 1.;
+            remember_mode false;)
+  | 's' -> (remember_mode true;
+            clear_graph ();
+            xz_axis !proj 500. 1. 1. 1.;
+            remember_mode false;)
+  | 'r' -> (remember_mode true;
+            clear_graph ();
+            xz_axis !proj 500. 1. 1. 1.;
+            remember_mode false;)
+  | _ -> ()
+  
 let draw_y_axis cam proj key = 
-  let _ = remember_mode true in 
   let _ = set_color black in
-  let _ = (match key with 
-  | 'a' -> y_axis !proj 500. 1. 1. 1.;
-  | 'd' -> y_axis !proj 500. 1. 1. 1.;
-  | 'w' -> y_axis !proj 500. 1. 1. 1.;
-  | 's' -> y_axis !proj 500. 1. 1. 1.;
-  | 'r' -> y_axis !proj 500. 1. 1. 1.;
-  | _ -> ()) in
-  remember_mode false
+  y_axis !proj 500. 1. 1. 1.
 
 module type Graph = sig
   val graph_prob : Evolution.domain2d -> (Complex.t list) list -> Evolution.boundary_conditions list -> unit
@@ -261,7 +257,7 @@ functor (Solver : Evolution2D) -> struct
                   (initial_condition : (Complex.t list) list) 
                   (boundary_condition : Evolution.boundary_conditions list) = 
     let _ = open_graph ":0 700x700" in
-    let cam = ref {o={x = 350. ; y = 250. ; z = 0.};s=10.;rx=25.;ry=0.;rz=0.} in
+    let cam = ref {o={x = 350. ; y = 250. ; z = 0.};s=10.;rx=25.;ry= -45.;rz=0.} in
     let proj = ref (camera_proj !cam) in
     let _ = xz_axis !proj 500. 1. 1. 1. in
     let _ = y_axis !proj 500. 1. 1. 1. in
@@ -276,7 +272,6 @@ functor (Solver : Evolution2D) -> struct
                     box {x=0.;y=0.;z=0.} {x=10.;y=5.;z= -10.};
                     box {x=0.;y=0.;z=0.} {x= -10.;y=20.;z= -10.};] in
         let boxes = sort_boxes !cam boxes in
-        let _ = if_clear_graph key in
         let _ = draw_xz_axis cam proj key in
         let _ = List.iter (fun b -> draw_box !cam !proj b) (snd boxes) in
         let _ = draw_y_axis cam proj key in
