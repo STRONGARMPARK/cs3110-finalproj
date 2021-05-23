@@ -30,7 +30,7 @@ and print_initial_condition_helper lst number acc =
 and print_user_preference_2d
     dimension
     solver
-    domain
+    domain  
     initial_condition
     boundary_condition
     print_boundary
