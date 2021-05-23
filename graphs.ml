@@ -1,25 +1,37 @@
 open Graphics
 open Evolution
 
+(** [vop op a b] takes 2d vertex [a] and 2d vertex [b] and applies
+    operation [op] to them *)
 let vop op a b = (op (fst a) (fst b), op (snd a) (snd b))
 
+(** [vfloat a] is the 2d float vertex from 2d int vertex [a] *)
 let vfloat (a : int * int) = (float (fst a), float (snd a))
 
+(** [vint a] is the 2d int vertex from 2d float vertex [a] *)
 let vint (a : float * float) =
   (int_of_float (fst a), int_of_float (snd a))
 
+(** [mag_float a] is the magnitude of 2d float vertex [a] *)
 let mag_float a = sqrt ((fst a *. fst a) +. (snd a *. snd a))
 
+(** [mag_int a] is the magnitude of 2d int vertex [a] *)
 let mag_int a = mag_float (vfloat a)
 
+(** [draw_text str x y] draws text [str] at position [x], [y] *)
 let draw_text str x y =
   let _ = moveto x y in
   draw_string str
 
+(** [point x y] draws point at position [x], [y] *)
 let point x y = fill_circle x y 1
 
+(** [point_size x y s] draws point with size [s] at position [x], [y] *)
 let point_size x y s = fill_circle x y s
 
+(** [tick_h] draws a horizontal tick mark of length [len] at position
+    [y] given the origin position [opx] and [opy] and the y-axis scaling
+    factor [sy] *)
 let tick_h len opx opy sy y =
   if y <> 0 then
     let _ =
@@ -33,6 +45,9 @@ let tick_h len opx opy sy y =
       (opx + (len / 2) + 5)
       (opy + (y * sy) - 5)
 
+(** [tick_v] draws a vertical tick mark of length [len] at position [x]
+    given the origin position [opx] and [opy] and the x-axis scaling
+    factor [sx] *)
 let tick_v len opx opy sx x =
   if x <> 0 then
     let _ =
@@ -44,6 +59,8 @@ let tick_v len opx opy sx x =
     in
     draw_text (string_of_int x) (opx + (x * sx)) (opy - (len / 2) - 15)
 
+(** [dotted_line_section size space p2 cur] draws a line at point [p2]
+    with size [size] in the direction of [cur] - [p2]. *)
 let rec dotted_line_section size space p2 cur =
   let dir = vop ( -. ) (vfloat p2) (vfloat cur) in
   let m = mag_float dir in
@@ -61,16 +78,13 @@ let rec dotted_line_section size space p2 cur =
     dotted_line_section size space p2 next
   else ""
 
+(** [dotted_line size space p1 p2] draws a dotted line from position
+    [p1] to [p2] with tick size of [size] with space of [space] between
+    them *)
 let dotted_line size space p1 p2 = dotted_line_section size space p2 p1
 
 module type Graph = sig
   val graph_prob :
-    Evolution.domain ->
-    Complex.t list ->
-    Evolution.boundary_conditions ->
-    unit
-
-  val graph_wave :
     Evolution.domain ->
     Complex.t list ->
     Evolution.boundary_conditions ->
@@ -84,6 +98,10 @@ functor
   struct
     module S = Solver
 
+    (** [setup_graph w h opx opy sx sy len] opens an ocaml graphics
+        window with sizes [w]x[h] and draws axis with tick marks of
+        length [len] at origin [opx],[opy] with scaling factors [sx] and
+        [sy] for x and y axis respectively.*)
     let setup_graph w h opx opy sx sy tick_length =
       let _ =
         open_graph (":0 " ^ string_of_int w ^ "x" ^ string_of_int h)
@@ -105,59 +123,10 @@ functor
       in
       axis opx opy
 
-    let graph_wave domain initial_condition boundary_condition =
-      let width = 700 in
-      let height = 700 in
-      let opx = 350 in
-      let opy = 350 in
-      let sx = 40 in
-      let sy = 320 in
-      let _ = setup_graph width height opx opy sx sy 4 in
-      let _ = draw_text "x" (size_x () - 15) (opy - 15) in
-      let _ = draw_text "i" (opx + 10) (size_y () - 15) in
-
-      let t = ref 0. in
-      let t_elapsed = ref 0. in
-      let w = ref initial_condition in
-      let domain = domain in
-
-      try
-        while true do
-          remember_mode false;
-          let _ = wait_next_event [ Key_pressed ] in
-          synchronize ();
-          set_color (rgb 0 0 0);
-
-          (* let dt = 0.1 in *)
-          t := Sys.time ();
-          t_elapsed := !t_elapsed +. 0.1;
-          let _ =
-            draw_text
-              ("Time: " ^ string_of_float !t_elapsed)
-              5
-              (size_y () - 15)
-          in
-          let rep = S.from_list !w in
-          w :=
-            S.evolve rep 0.08 boundary_condition domain 1.0 false
-            |> S.to_list;
-
-          let _ =
-            List.mapi
-              (fun i (point : Complex.t) ->
-                let x = opx + int_of_float (point.re *. float sx) in
-                let y = opy + int_of_float (point.im *. float sy) in
-                let _ = point_size x y 3 in
-                (* let _ = draw_text (string_of_float p) x (y + h + 5)
-                   in *)
-                point)
-              !w
-          in
-
-          set_color black
-        done
-      with Exit -> ()
-
+    (** [graph_prob d t b] graphs the probability distribution for
+        particles in a one dimensional domain given a domain [d] a list
+        of initial conditions as complex numbers [t] in a boundary
+        condition [b] for the solver to use *)
     let graph_prob domain initial_condition boundary_condition =
       let domain = domain in
       let lengthdomain = int_of_float (snd domain -. fst domain) in
