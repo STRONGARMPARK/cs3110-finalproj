@@ -9,7 +9,7 @@ TESTING=testing.byte
 OCAMLBUILD=ocamlbuild -use-ocamlfind
 
 default: build
-	OCAMLRUNPARAM=b utop
+	OCAMLRUNPARAM=b utop 
 
 build:
 	$(OCAMLBUILD) $(OBJECTS)
