@@ -5,6 +5,7 @@ module GrapherFPE1d = Graphs.Make (FreeParticleEvolutionEulers1D)
 module GrapherHOE = Graphs.Make (HarmonicOscillatorEvolutionEulers1D)
 module GrapherFPS2d = Graphs2d.Make (FreeParticleEvolutionSpectral2D)
 module GrapherFPE2d = Graphs2d.Make (FreeParticleEvolutionEulers2D)
+module GrapherHOE2d = Graphs2d.Make (HarmonicOscillatorEvolutionEulers2D)
 
 let rec print_thank_you x =
   print_endline "Thank you for using our application!"
@@ -173,6 +174,9 @@ and final_check_2d
       | "fpe" ->
           GrapherFPE2d.graph_prob domain initial_condition
             boundary_condition
+      | "hoe" -> 
+        GrapherHOE2d.graph_prob domain initial_condition
+        boundary_condition
       | _ -> failwith "not possible")
 
 and final_check_1d
@@ -632,9 +636,11 @@ and initial_function_two_dimension dimension solver domain =
           print_endline "\n";
           print_string "> "
   done;
-  boundary_conditions_two_dimension dimension solver domain
-    !initial_condition
-
+  match solver with 
+  | "fps" -> final_check_2d dimension solver domain
+    !initial_condition Periodic
+  | _ -> boundary_conditions_two_dimension dimension solver domain
+  !initial_condition
 (*[domain_one_dimension dimension solver] does exactly what the two
   dimensional counterpart does, but instead with the idea that it is
   solving in one dimension. Again there are quite a few things that we
