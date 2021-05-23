@@ -351,7 +351,7 @@ and initial_function_two_dimension dimension solver domain =
       print_endline "\n";
       print_string "> ";end 
   done; 
-  print_user_preference_2d dimension solver domain !initial_condition Periodic false false; 
+  print_user_preference_2d dimension solver domain (List.rev !initial_condition) Periodic false false; 
 
 and domain_one_dimension dimension solver =
   print_endline "\n\n\n\n\n\n";
@@ -423,6 +423,18 @@ and domain_one_dimension dimension solver =
   done; 
   initial_function_one_dimension dimension solver (!domain_first, !domain_second)
 
+
+(*[domain_two_dimension dimension solver] takes in a dimension that you want to 
+solve in, and the solver that they chose from previous functions. As alwyas 
+it prints out the current prefences the user has chosen. There are quite a few
+accounting things that we have to take care of for each of the boundaries. 
+Because we are in two dimensions, we actually have ot input 4 numbers instead of 
+2. One of the things that the interface had to take care of is that the left
+bound had to be less than the right bound. Another restriction is that if
+the user chose the Harmonic Oscillator as their solver, their domain has to be 
+symmetric about the origin. Which lead to much mroe error handling. If all is 
+succesful, then the users preferred domain will be passed onto the 
+initial_function helper for two dimensions. *)
 and domain_two_dimension dimension solver = 
   print_endline "\n\n\n\n\n\n";
   print_user_preference_2d dimension solver ((0.0, 0.0),(0.0, 0.0)) [] Periodic false false;
@@ -559,6 +571,14 @@ and domain_two_dimension dimension solver =
   initial_function_two_dimension dimension solver ((!domain_first, !domain_second),(!domain_third, !domain_fourth))
 
 
+(*[solver_helper dimension] takes in the dimension that the user chose
+from the previous function and allows the user to choose from a list of solvers
+to continue. Also notice that in the beginning, the user's current selected 
+preferences will show up on the screen. If they enter a valid option, then 
+dependent on the dimension that they wanted to solve in, they will either be 
+taken to the domain_one_dimension or domain_two_dimension helper to pick 
+out their domains. There is also of course error handling to help guide the 
+user through the process.*)
 and solver_helper dimension = 
   print_endline "\n\n\n\n\n\n";
   print_user_preference dimension "no" (0.0, 0.0) [] Periodic false false;
@@ -601,7 +621,16 @@ and solver_helper dimension =
   | 2 -> domain_two_dimension dimension !solver
   | _ -> failwith "not possible"
   
-
+(*[dimension_starter x] represents the initial starting configuration with 
+no dimension configured yet. If the user types in 'q', the application will 
+quit with a goodbye message and if the user types 'b' then the application
+will go back to the main starting page. This dynamic is similar throughout
+the solver so we will state it once here for clarity (the only difference 
+being of course what 'b' actually goes back to). Then finally, based on what 
+the user inputs it will take them to the solver_helper function to pick out 
+a solver, except with a different dimension variable. It also has error handling
+so if the user does not type in a correct dimension (i.e. either 1 or 2), 
+a message will appear telling the user what to actually type in.*)
 and dimension_starter x = 
   ANSITerminal.print_string [ ANSITerminal.cyan ]
   "\n\n\nPlease type in how many dimensions you would like us to solve in.\n";
@@ -630,6 +659,11 @@ and dimension_starter x =
   | _ -> failwith ""
 
 
+(*[main ()] is the initial screen for our application. It has instructions of 
+how to quit and go back in our application, and also prompts the user to start 
+the process of selecting their options. Note that if the user tries to 
+go back from this phase by using the command 'b', it will give them a warning
+saying that they can't go back from here as this is the starting screen.*)
 and main () =
   ANSITerminal.print_string [ ANSITerminal.magenta ]
     "\n\nWelcome to the Schrödinger equation solver!\n";
@@ -641,6 +675,11 @@ and main () =
   print_string "> ";
   match read_line () with
   | exception End_of_file -> ()
+  | "q" -> print_thank_you 1; Stdlib.exit 0;
+  | "b" -> 
+    ANSITerminal.print_string [ ANSITerminal.red ]
+    "\n\n\nYou can't go back from the starting page!"; 
+    main ();
   | x -> dimension_starter 1
 
 let () = main ()
