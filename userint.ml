@@ -1,9 +1,12 @@
 open Graphs;;
 open Evolution;;
 
-module GrapherFPS = Graphs.Make (FreeParticleEvolutionSpectral1D)
-module GrapherFPE = Graphs.Make (FreeParticleEvolutionEulers1D)
+module GrapherFPS1d = Graphs.Make (FreeParticleEvolutionSpectral1D)
+module GrapherFPE1d = Graphs.Make (FreeParticleEvolutionEulers1D)
 module GrapherHOE = Graphs.Make (HarmonicOscillatorEvolutionEulers1D)
+
+module GrapherFPS2d = Graphs2d.Make (FreeParticleEvolutionSpectral2D)
+module GrapherFPE2d = Graphs2d.Make (FreeParticleEvolutionEulers2D)
 
 let rec print_thank_you x = 
   print_endline "Thank you for using our application!";
@@ -46,17 +49,13 @@ and print_user_preference_2d dimension solver domain initial_condition boundary_
         | Periodic -> 
           if not print_boundary then () else 
           print_endline "Boundary condition: Periodic";
-        | Neumann (x,y) -> 
-          if not print_neumann then () else begin 
-          print_string "Boundary condition: Neumann ";
-          print_string "("; print_float x.Complex.re; print_string "+ i"; print_float x.Complex.im; print_string ")";
-          print_string ", ("; print_float y.Complex.re; print_string "+ i"; print_float y.Complex.im; print_string ")"   end 
         | Dirichlet -> 
           if not print_boundary then () else
-          print_endline "Boundary condition: Dirichlet"; in 
+          print_endline "Boundary condition: Dirichlet"; 
+        | _ -> failwith "not possible no Neumann in 2d" in 
         (); end 
 
-and print_user_preference dimension solver domain initial_condition boundary_condition print_boundary print_neumann =
+and print_user_preference_1d dimension solver domain initial_condition boundary_condition print_boundary print_neumann =
   begin 
     let _ = 
       match dimension with 
@@ -94,51 +93,47 @@ and print_user_preference dimension solver domain initial_condition boundary_con
     ();
   end 
 
-
-and wave_or_prob_1d dimension solver domain initial_condition boundary_condition = 
+and final_check_2d dimension solver domain initial_condition boundary_condition = 
   print_endline "\n\n\n\n\n\n";
-  print_user_preference dimension solver domain initial_condition boundary_condition true true;
   ANSITerminal.print_string [ ANSITerminal.cyan ]
-  "\n\n\nFinally, would you like the wave function or the probability distribution? Again much like before just type 1 or 2 and press enter for the option that you want.";
-  print_endline "";
-  ANSITerminal.print_string [ ANSITerminal.magenta ]
-  "\n|> (1) Wave Function";
-  ANSITerminal.print_string [ ANSITerminal.magenta ]
-  "\n|> (2) Probability Distribution";
+  "\n\n\nBelow you will find your selected choices, just press enter to continue to see your graph evolve!";
+  print_endline "\n";
+  print_user_preference_2d dimension solver domain initial_condition boundary_condition true true;
   print_endline "\n";
   print_string "> ";
-  let print = ref false in 
-  let finished = ref false in 
-  let wop = ref "" in 
-  while not !finished do 
-    if !print then begin 
-    ANSITerminal.print_string [ ANSITerminal.red ]
-    "\nPlease input a valid option (1 or 2)\n"; end else ();
-    match read_line () with 
-    | "q" -> print_thank_you 1; Stdlib.exit 0;
-    | "b" -> boundary_conditions_one_dimension dimension solver domain initial_condition
-    | "1" -> finished := true; wop := "wave"
-    | "2" -> finished := true; wop := "probability"
-    | _ -> print := true
-  done; 
-  match !wop with 
-  | "wave" -> begin
+  match read_line () with 
+  | _ -> 
     match solver with 
-    | "fps" -> GrapherFPS.graph_wave domain initial_condition boundary_condition
-    | "fpe" -> GrapherFPE.graph_wave domain initial_condition boundary_condition
-    | "hoe" -> GrapherHOE.graph_wave domain initial_condition boundary_condition
-    | _ -> failwith "not possible" end
-  | "probability" -> begin
-    match solver with 
-    | "fps" -> GrapherFPS.graph_prob domain initial_condition boundary_condition
-    | "fpe" -> GrapherFPE.graph_prob domain initial_condition boundary_condition
-    | "hoe" -> GrapherHOE.graph_prob domain initial_condition boundary_condition
-    | _ -> failwith "not possible" end
-  | _ -> failwith "not possible"
+    | "fps" -> GrapherFPS2d.graph_prob domain initial_condition boundary_condition
+    | "fpe" -> GrapherFPE2d.graph_prob domain initial_condition boundary_condition
+    | _ -> failwith "not possible" 
 
+and final_check_1d dimension solver domain initial_condition boundary_condition = 
+  print_endline "\n\n\n\n\n\n";
+  ANSITerminal.print_string [ ANSITerminal.cyan ]
+  "\n\n\nBelow you will find your selected choices, just press enter to continue to see your graph evolve!";
+  print_endline "\n";
+  print_user_preference_1d dimension solver domain initial_condition boundary_condition true true;
+  print_endline "\n";
+  print_string "> ";
+  match read_line () with 
+  | _ -> 
+    match solver with 
+    | "fps" -> GrapherFPS1d.graph_prob domain initial_condition boundary_condition
+    | "fpe" -> GrapherFPE1d.graph_prob domain initial_condition boundary_condition
+    | "hoe" -> GrapherHOE.graph_prob domain initial_condition boundary_condition
+    | _ -> failwith "not possible" 
+  
+(*[neumann_helper dimension solver domain initial_condition] takes in the 
+dimension, solver, domain and initial_condition and is used to help with 
+the making of the derivatives at each boundary for neumann for one dimension. 
+Keep in mind that for two dimensions we only have two boundary conditions. 
+As always helpful messages will be printed, and if everything runs 
+smoothly, then they will be taken to the final stage where they can review their
+options and graph the probability density function. *)
 and neumann_helper dimension solver domain initial_condition = 
   print_endline "\n\n\n\n\n\n";
-  print_user_preference dimension solver domain initial_condition Periodic false false;
+  print_user_preference_1d dimension solver domain initial_condition Periodic false false;
   ANSITerminal.print_string [ ANSITerminal.cyan ]
   "\n\n\nPlease input the derivative of the left endpoint that you would like. Has to be a complex number and it is formatted like before";
   print_endline "\n";
@@ -195,11 +190,52 @@ and neumann_helper dimension solver domain initial_condition =
       | x :: y :: [] -> begin neumann_second := {Complex.re = x; im = y}; finished_second := true end
       | _ -> failwith "not possible" 
   done; 
-  wave_or_prob_1d dimension solver domain initial_condition (Neumann (!neumann_first, !neumann_second))
+  final_check_1d dimension solver domain initial_condition (Neumann (!neumann_first, !neumann_second))
 
+and boundary_conditions_two_dimension dimension solver domain initial_condition =
+  print_endline "\n\n\n\n\n\n";
+  print_user_preference_2d dimension solver domain initial_condition Periodic false false;
+  ANSITerminal.print_string [ ANSITerminal.cyan ]
+  "\n\n\nPlease input the boundary condition that you want to have. Much like the solver just type in the number of the option that you want from the list.";
+  print_endline "";
+  ANSITerminal.print_string [ ANSITerminal.magenta ]
+  "\n|> (1) Periodic";
+  ANSITerminal.print_string [ ANSITerminal.magenta ]
+  "\n|> (2) Dirichlet";
+  print_endline "\n";
+  print_string "> ";
+  let print = ref false in 
+  let finished = ref false in 
+  let boundary_condition = ref Periodic in 
+  while not !finished do 
+    if !print then begin 
+    ANSITerminal.print_string [ ANSITerminal.red ]
+    "\nPlease input a valid option (1 or 2)\n"; 
+    print_endline "\n";
+    print_string "> ";end else ();
+    match read_line () with 
+    | "1" -> finished := true; boundary_condition := Periodic
+    | "2" -> finished := true; boundary_condition := Dirichlet
+    | "q" -> print_thank_you 1; Stdlib.exit 0;
+    | "b" -> initial_function_two_dimension dimension solver domain
+    | _ -> print := true 
+  done;
+  match !boundary_condition with 
+  | Periodic -> final_check_2d dimension solver domain initial_condition Periodic
+  | Dirichlet -> final_check_2d dimension solver domain initial_condition Dirichlet 
+  | _ -> failwith "not possible given error checking"
+
+
+(*[boundary_conditions_one_dimension dimension solver domain initial_condition]
+takes in all of the variables that have been listed, and like the solver 
+helper, gives the user a list to choose from as to what boundary condition 
+they want. A tricky part about this is that if they chose the Neumann boundary 
+condition, then they would actulaly have to be taken to a different helper as 
+Neumann requires a bit of an actual initial_condition to represent the 
+derivatives at the boundaries.*)
 and boundary_conditions_one_dimension dimension solver domain initial_condition = 
   print_endline "\n\n\n\n\n\n";
-  print_user_preference dimension solver domain initial_condition Periodic false false;
+  print_user_preference_1d dimension solver domain initial_condition Periodic false false;
   ANSITerminal.print_string [ ANSITerminal.cyan ]
   "\n\n\nPlease input the boundary condition that you want to have. Much like the solver just type in the number of the option that you want from the list.";
   print_endline "";
@@ -229,11 +265,10 @@ and boundary_conditions_one_dimension dimension solver domain initial_condition 
     | _ -> print := true 
   done;
   match !boundary_condition with 
-  | Periodic -> wave_or_prob_1d dimension solver domain initial_condition Periodic
-  | Dirichlet -> wave_or_prob_1d dimension solver domain initial_condition Dirichlet 
+  | Periodic -> final_check_1d dimension solver domain initial_condition Periodic
+  | Dirichlet -> final_check_1d dimension solver domain initial_condition Dirichlet 
   | Neumann x -> neumann_helper dimension solver domain initial_condition;
   
-  wave_or_prob_1d dimension solver domain initial_condition !boundary_condition 
 
 and to_complex_list list acc = 
   match list with
@@ -241,9 +276,21 @@ and to_complex_list list acc =
   | x :: y :: xs -> to_complex_list xs ({Complex.re = x; im = y} :: acc)
   | _ -> failwith "not possible"
 
+(*[initial_function_one_dimension dimension solver domain] does exactly 
+what one would expect it to gien the name. It takes in a dimension, solver,
+and domain, and gives users instructions to inptu their initial_function 
+or a series of complex numbers. It will also give helpful hints if the 
+user ever does something that is against what our back-end can handle. 
+From here, if everything goes succesfully, this will be passed onto the 
+boundary condition helper for one dimension with the given dimension solver
+and domain, and now also with the initial function which is just a 
+list of complex numbers. Another thing we had to watch out for is that
+if they gave they chose the Free Particle Euler's solver, then 
+we would have to take them straight to the grapher with Periodic as their 
+boundary_condition.*)
 and initial_function_one_dimension dimension solver domain = 
   print_endline "\n\n\n\n\n\n";
-  print_user_preference dimension solver domain [] Periodic false false;
+  print_user_preference_1d dimension solver domain [] Periodic false false;
   ANSITerminal.print_string [ ANSITerminal.cyan ]
   "\n\n\nPlease input your initial function. You need to input at least 4 complex values.";
   ANSITerminal.print_string [ ANSITerminal.green ]
@@ -274,9 +321,27 @@ and initial_function_one_dimension dimension solver domain =
           begin initial_condition := complex_verse; finished := true end 
   done; 
   match solver with 
-  | "fps" -> wave_or_prob_1d dimension solver domain !initial_condition Periodic
+  | "fps" -> final_check_1d dimension solver domain !initial_condition Periodic
   | _ -> boundary_conditions_one_dimension dimension solver domain !initial_condition
 
+
+(*[initial_function_two_dimension dimension solver domain] does exactly what 
+it sounds like it does, which is it takes in the dimension, solver, and domain,
+which as preconditions should be valid as error handling should be done by 
+previous functions. The working of the initial_function for two dimensions
+was a little bit trickier. This was because we had to take in a matrix of 
+complex numbers with quite a few restrictions as well. The restrictions being 
+that first of all they had to be valid complex numbers, second of all we
+needed for the number of columns to be greater than or equal to 4 and same for 
+the rows, third of all after the first column was inputed, we needed every 
+other column to obviously have the same number of elements, and then error
+handling messages to the user for all of these possibilities as well. If the 
+user does not input a correct list of complex numbers 
+(i.e. something that isn't even or has less than the required number for a 
+column), the interface will provide helpful hints to the reader. It will 
+even tell the user how many elements they hav eot type in for subsequent 
+columns, based on their input for the first column. If all is succesful, then 
+this will be passed on to boundary_condition helper for two dimensions.*)
 and initial_function_two_dimension dimension solver domain = 
   print_endline "\n\n\n\n\n\n";
   print_user_preference_2d dimension solver domain [] Periodic false false; 
@@ -351,11 +416,22 @@ and initial_function_two_dimension dimension solver domain =
       print_endline "\n";
       print_string "> ";end 
   done; 
-  print_user_preference_2d dimension solver domain (List.rev !initial_condition) Periodic false false; 
+  boundary_conditions_two_dimension dimension solver domain !initial_condition;
 
+(*[domain_one_dimension dimension solver] does exactly what the two 
+dimensional counterpart does, but instead with the idea that it is solving in 
+one dimension. Again there are quite a few things that we have to
+account for here. Number one is the fact that again the left bound has to be
+less than the right bound. Another thing is that if they chose
+Harmonic Oscillator as their solver then it has to be symmetric about the 
+origin. However, this actually entails checking 2 thing. At first checking
+that the first boudn is nothing less than or equal to 0, and then making
+sure that the second one is the positive coutnerpart. Along with this
+we also have checking for any faulty inputs such as letters or white spaces
+etc. *)
 and domain_one_dimension dimension solver =
   print_endline "\n\n\n\n\n\n";
-  print_user_preference dimension solver (0.0, 0.0) [] Periodic false false;
+  print_user_preference_1d dimension solver (0.0, 0.0) [] Periodic false false;
   let print_first = ref false in
   let print_second = ref false in 
   let finished_first = ref false in 
@@ -432,9 +508,11 @@ Because we are in two dimensions, we actually have ot input 4 numbers instead of
 2. One of the things that the interface had to take care of is that the left
 bound had to be less than the right bound. Another restriction is that if
 the user chose the Harmonic Oscillator as their solver, their domain has to be 
-symmetric about the origin. Which lead to much mroe error handling. If all is 
-succesful, then the users preferred domain will be passed onto the 
-initial_function helper for two dimensions. *)
+symmetric about the origin. Which lead to much more error handling. If all is 
+succesful, then the users preferred domain will be passed on to the 
+two dimensional initial_function handler. Also note that different 
+error messages had to be made and different instructions had to be made
+dependent on whether they were working on their first domain or second domain.*)
 and domain_two_dimension dimension solver = 
   print_endline "\n\n\n\n\n\n";
   print_user_preference_2d dimension solver ((0.0, 0.0),(0.0, 0.0)) [] Periodic false false;
@@ -581,7 +659,7 @@ out their domains. There is also of course error handling to help guide the
 user through the process.*)
 and solver_helper dimension = 
   print_endline "\n\n\n\n\n\n";
-  print_user_preference dimension "no" (0.0, 0.0) [] Periodic false false;
+  print_user_preference_1d dimension "no" (0.0, 0.0) [] Periodic false false;
   ANSITerminal.print_string [ ANSITerminal.cyan ]
   "\n\n\nWhich solver would you like to use (type in 1, 2, or 3 to choose from the options):";
   print_endline "";
