@@ -91,6 +91,7 @@ module type Graph = sig
     unit
 end
 
+(** Make a 1d graphing module with Evolution1d solver [Solver] *)
 module Make =
 functor
   (Solver : Evolution1D)

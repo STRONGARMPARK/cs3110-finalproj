@@ -632,6 +632,7 @@ module type Graph2d = sig
     unit
 end
 
+(** Make a 2d graphing module with Evolution2d solver [Solver] *)
 module Make =
 functor
   (Solver : Evolution2D)
