@@ -1,4 +1,4 @@
-MODULES=evolution graphs graphs2d
+MODULES=evolution graphs graphs2d userint 
 OBJECTS=$(MODULES:=.cmo)
 MLS=$(MODULES:=.ml)
 MLIS=$(MODULES:=.mli)
