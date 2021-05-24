@@ -6,29 +6,28 @@ module GrapherFPE1d = Graphs.Make (FreeParticleEvolutionEulers1D)
 module GrapherHOE1d = Graphs.Make (HarmonicOscillatorEvolutionEulers1D)
 module GrapherFPS2d = Graphs2d.Make (FreeParticleEvolutionSpectral2D)
 module GrapherFPE2d = Graphs2d.Make (FreeParticleEvolutionEulers2D)
-module GrapherHOE2d = Graphs2d.Make (HarmonicOscillatorEvolutionEulers2D) 
+module GrapherHOE2d = Graphs2d.Make (HarmonicOscillatorEvolutionEulers2D)
 
-
-(**[print_thank_you x] just prints the message "Thank you for using our 
-application!"*)
+(**[print_thank_you x] just prints the message "Thank you for using our
+   application!"*)
 let rec print_thank_you x =
   print_endline "Thank you for using our application!"
 
-
-(**[print_initial_condition_helper_2d lst] takes in a two dimensional list
-of complex numbers and prints the first column. This is made to account for 
-the differences in printing one and two dimensional initial_conditions.*)
+(**[print_initial_condition_helper_2d lst] takes in a two dimensional
+   list of complex numbers and prints the first column. This is made to
+   account for the differences in printing one and two dimensional
+   initial_conditions.*)
 and print_initial_condition_helper_2d lst =
   match lst with
   | x :: xs -> print_initial_condition_helper (List.rev x) 0 ""
   | [] -> failwith "not possible"
 
-(**[print_initial_condition_helper lst number acc] is just a helper 
-to print the initial condition for one dimension. 
-It takes in a list a number and an accumulator. The list represents the list
-of complex numbers that you want to print, the number represents up to 
-what number you want to print and the accumulator is what stores everything
-that is being printed. This is typically passed in as ""*)
+(**[print_initial_condition_helper lst number acc] is just a helper to
+   print the initial condition for one dimension. It takes in a list a
+   number and an accumulator. The list represents the list of complex
+   numbers that you want to print, the number represents up to what
+   number you want to print and the accumulator is what stores
+   everything that is being printed. This is typically passed in as ""*)
 and print_initial_condition_helper lst number acc =
   match number with
   | 3 -> acc ^ "..."
@@ -42,96 +41,153 @@ and print_initial_condition_helper lst number acc =
             (acc ^ "(" ^ real ^ "+ i" ^ imaginary ^ ")" ^ ", "))
 
 (**[print_user_preference_2d dimension solver domain initial_condition 
-boundary_condition print_boundary print_neumann] has essentially the same 
-job as the one dimensional printer, except it has to do everything for 2 
-dimensions. For example, the domain is 2 dimensional, and so is the 
-initial_condition and because of this, it has to be printed differently. 
-We also have a different set of boundary conditions to print for 2 
-2 dimensional stuff which is why we had to make a separate printer 
-for 2 dimensional preferences.*)
-and print_user_preference_2d dimension solver domain initial_condition boundary_condition print_boundary print_neumann = 
-    begin let _ = print_endline "Dimensions: 2" in 
-    let _ = match solver with 
-    | "fps" -> 
-      print_endline "Solver: Free Particle Spectral"; 
-    | "fpe" -> 
-      print_endline "Solver: Free Particle Eulers";
-    | "hoe" -> 
-      print_endline "Solver: Harmonic Oscillator";
-    | _ -> (); in 
-    let _ = match domain with 
-    | ((f,s), (t,p)) -> 
-      if f = 0.0 && s = 0.0 && t = 0.0 && p = 0.0 then () else begin 
-      print_string "Domain (("; print_float f; print_string ", "; print_float s; print_string ")"; print_string ", ("; print_float t; print_string ", "; print_float p; print_endline "))"; end in 
-    let _ = match initial_condition with
-    | [] -> ();
-    | _ -> 
-      print_string "Initial Condition First Column: "; print_endline (print_initial_condition_helper_2d initial_condition); in 
-    let _ = match boundary_condition with 
-    | Periodic -> 
-      if not print_boundary then () else 
-      print_endline "Boundary condition: Periodic";
-    | Dirichlet -> 
-      if not print_boundary then () else
-      print_endline "Boundary condition: Dirichlet"; 
-    | _ -> failwith "not possible" in 
-    (); end 
+boundary_condition print_boundary print_neumann]
+   has essentially the same job as the one dimensional printer, except
+   it has to do everything for 2 dimensions. For example, the domain is
+   2 dimensional, and so is the initial_condition and because of this,
+   it has to be printed differently. We also have a different set of
+   boundary conditions to print for 2 2 dimensional stuff which is why
+   we had to make a separate printer for 2 dimensional preferences.*)
+and print_user_preference_2d
+    dimension
+    solver
+    domain
+    initial_condition
+    boundary_condition
+    print_boundary
+    print_neumann =
+  let _ = print_endline "Dimensions: 2" in
+  let _ =
+    match solver with
+    | "fps" -> print_endline "Solver: Free Particle Spectral"
+    | "fpe" -> print_endline "Solver: Free Particle Eulers"
+    | "hoe" -> print_endline "Solver: Harmonic Oscillator"
+    | _ -> ()
+  in
+  let _ =
+    match domain with
+    | (f, s), (t, p) ->
+        if f = 0.0 && s = 0.0 && t = 0.0 && p = 0.0 then ()
+        else begin
+          print_string "Domain ((";
+          print_float f;
+          print_string ", ";
+          print_float s;
+          print_string ")";
+          print_string ", (";
+          print_float t;
+          print_string ", ";
+          print_float p;
+          print_endline "))"
+        end
+  in
+  let _ =
+    match initial_condition with
+    | [] -> ()
+    | _ ->
+        print_string "Initial Condition First Column: ";
+        print_endline
+          (print_initial_condition_helper_2d initial_condition)
+  in
+  let _ =
+    match boundary_condition with
+    | Periodic ->
+        if not print_boundary then ()
+        else print_endline "Boundary condition: Periodic"
+    | Dirichlet ->
+        if not print_boundary then ()
+        else print_endline "Boundary condition: Dirichlet"
+    | _ -> failwith "not possible"
+  in
+  ()
 
 (** [print_user_preference_1d dimension solver domain initial_condition 
-boundary_condition print_boundary print_neumann] takes in all of the
-parameters that final_check does, and then also has to take in a couple of 
-extra boundaries to know what to print. Keep in mind that this is
-for 1d so it is different from 2d as the domain has to be printed out 
-differently, the initial condition has to be printed out differently, and 
-the and also it has all three boundary conditions instead of 2. The only other
-non-self explanatory parameters that get passed in are print_boundary and 
-print_neumann which tell the printer whether or not to print the 
-boundary condition or whether or not to print the neumann, because given a 
-certain staget that the user may be at, one possibly does not have to print
-everything.*)
-and print_user_preference_1d dimension solver domain initial_condition boundary_condition print_boundary print_neumann =
-  begin 
-    let _ = 
-      match dimension with 
-      | 1 -> print_endline "Dimensions: 1"; 
-      | 2 -> print_endline "Dimensions: 2";
-      | _ -> failwith "not possible" in 
-    let _ = match solver with 
-    | "fps" -> 
-      print_endline "Solver: Free Particle Spectral"; 
-    | "fpe" -> 
-      print_endline "Solver: Free Particle Eulers";
-    | "hoe" -> 
-      print_endline "Solver: Harmonic Oscillator";
-    | _ -> (); in 
-    let _ = match domain with 
-    | (x,y) -> 
-      if x = 0.0 && y = 0.0 then () else begin 
-      print_string "Domain ("; print_float x; print_string ", "; print_float y; print_endline ")"; end in 
-    let _ = match initial_condition with
-    | [] -> ();
-    | _ -> 
-      print_string "Initial Condition: "; print_endline (print_initial_condition_helper (List.rev initial_condition) 0 ""); in 
-    let _ = match boundary_condition with 
-    | Periodic -> 
-      if not print_boundary then () else 
-      print_endline "Boundary condition: Periodic";
-    | Neumann (x,y) -> 
-      if not print_neumann then () else begin 
-      print_string "Boundary condition: Neumann ";
-      print_string "("; print_float x.Complex.re; print_string "+ i"; print_float x.Complex.im; print_string ")";
-      print_string ", ("; print_float y.Complex.re; print_string "+ i"; print_float y.Complex.im; print_string ")"   end 
-    | Dirichlet -> 
-      if not print_boundary then () else
-      print_endline "Boundary condition: Dirichlet"; in 
-    ();
-  end 
+boundary_condition print_boundary print_neumann]
+    takes in all of the parameters that final_check does, and then also
+    has to take in a couple of extra boundaries to know what to print.
+    Keep in mind that this is for 1d so it is different from 2d as the
+    domain has to be printed out differently, the initial condition has
+    to be printed out differently, and the and also it has all three
+    boundary conditions instead of 2. The only other non-self
+    explanatory parameters that get passed in are print_boundary and
+    print_neumann which tell the printer whether or not to print the
+    boundary condition or whether or not to print the neumann, because
+    given a certain staget that the user may be at, one possibly does
+    not have to print everything.*)
+and print_user_preference_1d
+    dimension
+    solver
+    domain
+    initial_condition
+    boundary_condition
+    print_boundary
+    print_neumann =
+  let _ =
+    match dimension with
+    | 1 -> print_endline "Dimensions: 1"
+    | 2 -> print_endline "Dimensions: 2"
+    | _ -> failwith "not possible"
+  in
+  let _ =
+    match solver with
+    | "fps" -> print_endline "Solver: Free Particle Spectral"
+    | "fpe" -> print_endline "Solver: Free Particle Eulers"
+    | "hoe" -> print_endline "Solver: Harmonic Oscillator"
+    | _ -> ()
+  in
+  let _ =
+    match domain with
+    | x, y ->
+        if x = 0.0 && y = 0.0 then ()
+        else begin
+          print_string "Domain (";
+          print_float x;
+          print_string ", ";
+          print_float y;
+          print_endline ")"
+        end
+  in
+  let _ =
+    match initial_condition with
+    | [] -> ()
+    | _ ->
+        print_string "Initial Condition: ";
+        print_endline
+          (print_initial_condition_helper
+             (List.rev initial_condition)
+             0 "")
+  in
+  let _ =
+    match boundary_condition with
+    | Periodic ->
+        if not print_boundary then ()
+        else print_endline "Boundary condition: Periodic"
+    | Neumann (x, y) ->
+        if not print_neumann then ()
+        else begin
+          print_string "Boundary condition: Neumann ";
+          print_string "(";
+          print_float x.Complex.re;
+          print_string "+ i";
+          print_float x.Complex.im;
+          print_string ")";
+          print_string ", (";
+          print_float y.Complex.re;
+          print_string "+ i";
+          print_float y.Complex.im;
+          print_string ")"
+        end
+    | Dirichlet ->
+        if not print_boundary then ()
+        else print_endline "Boundary condition: Dirichlet"
+  in
+  ()
 
 (**[final_check_2d dimension solver domain initial_condition 
-boundary_condition] takes in as input everything that the 
-user wants to graph, their preferneces that is, and uses the 
-two dimensional printer to print it. It then makes sure that 
-everything is ok and graphs accordingly.*)
+boundary_condition]
+   takes in as input everything that the user wants to graph, their
+   preferneces that is, and uses the two dimensional printer to print
+   it. It then makes sure that everything is ok and graphs accordingly.*)
 and final_check_2d
     dimension
     solver
@@ -292,12 +348,13 @@ and neumann_helper dimension solver domain initial_condition =
     (Neumann (!neumann_first, !neumann_second))
 
 (**[boundary_conditions_two_dimension dimension solver domain 
-initial_condition] takes the dimension, solver, domain and initial_condition 
-of a 2 dimensional solving run. It assumes validitiy of all other parameters
-which is guaranteed by all functions that are passed to it. It is 
-different form the one dimension boundary condition handler as there 
-the domain and initial condition are multi dimensional now. There is 
-also no Neumann for two dimensions.*)
+initial_condition]
+   takes the dimension, solver, domain and initial_condition of a 2
+   dimensional solving run. It assumes validitiy of all other parameters
+   which is guaranteed by all functions that are passed to it. It is
+   different form the one dimension boundary condition handler as there
+   the domain and initial condition are multi dimensional now. There is
+   also no Neumann for two dimensions.*)
 and boundary_conditions_two_dimension
     dimension
     solver
@@ -600,7 +657,9 @@ and initial_function_two_dimension dimension solver domain =
     | "b" -> initial_function_two_dimension dimension solver domain
     | "d" ->
         if !num_columns < 4 then begin
-          print_string "\nYou need to input at least "; print_int (4 - !num_columns); print_string " more columns!";
+          print_string "\nYou need to input at least ";
+          print_int (4 - !num_columns);
+          print_string " more columns!";
           print_second := false;
           print_endline "\n";
           print_string "> "
@@ -614,7 +673,7 @@ and initial_function_two_dimension dimension solver domain =
           with Failure x -> [ 0.0 ]
         in
         let length = List.length list_verse in
-        if length <> !required_num_in_columns then begin print_second := true end 
+        if length <> !required_num_in_columns then print_second := true
         else
           let complex_verse = to_complex_list list_verse [] in
           initial_condition := complex_verse :: !initial_condition;
@@ -1103,4 +1162,3 @@ and main () =
   | x -> dimension_starter 1
 
 let () = main ()
-
