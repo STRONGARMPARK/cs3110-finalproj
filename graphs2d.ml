@@ -140,8 +140,40 @@ let print_v3 (v3 : v3) =
   print_string " )";
   ()
 
+(** [print_c a] pretty prints [a] of type [c] *)
+let print_c (c : c) =
+  print_string "( r = ";
+  print_float c.r;
+  print_string " , g = ";
+  print_float c.g;
+  print_string " , b = ";
+  print_float c.b;
+  print_string " )";
+  ()
+
+(** [print_box a] pretty prints [a] of type [box] *)
+let print_box (b : box) =
+  print_string "{ ";
+  print_v3 b.v1;
+  print_string " , ";
+  print_v3 b.v2;
+  print_string " , ";
+  print_v3 b.v3;
+  print_string " , ";
+  print_v3 b.v4;
+  print_string " , ";
+  print_v3 b.v5;
+  print_string " , ";
+  print_v3 b.v6;
+  print_string " , ";
+  print_v3 b.v7;
+  print_string " , ";
+  print_v3 b.v8;
+  print_string " }";
+  ()
+
 (** [check m] checks if m is a valid matrix. A valid matrix is
-    rectangle, so has the same number of columns for each row, and the
+    rectangle, so has the same number of columns for each row, or the
     same number of rows for each column. *)
 
 let check (m : m) : m =
@@ -555,10 +587,10 @@ let updatecam cam proj key def =
       cam := { !cam with ry = !cam.ry +. 1. };
       proj := camera_proj !cam
   | 'w' ->
-      cam := { !cam with rx = max (!cam.rx +. 1.) 0. };
+      cam := { !cam with rx = min (max (!cam.rx +. 1.) 0.) 90. };
       proj := camera_proj !cam
   | 's' ->
-      cam := { !cam with rx = max (!cam.rx -. 1.) 0. };
+      cam := { !cam with rx = min (max (!cam.rx -. 1.) 0.) 90. };
       proj := camera_proj !cam
   | 'e' ->
       cam := { !cam with s = min (!cam.s *. 1.1) 120. };
