@@ -150,10 +150,9 @@ module FreeParticleEvolutionSpectral1D : Evolution1D = struct
       raise (Invalid_argument "Illegal boundary condition.");
     let n = List.length w in
     let k2 = get_k2 n d in
-    List.map
-      (fun x -> Complex.exp { Complex.re = 0.; im = -0.5 *. tau *. x })
-      k2
-    |> List.map2 Complex.mul w
+    List.map (fun x -> Complex.exp {Complex.re = 0.; im = -0.5 *. tau *. x}) k2
+    |> (List.map2 Complex.mul w)
+
 
   let evolve w tau b d time print = step w time b d
 
@@ -450,6 +449,9 @@ module FreeParticleEvolutionSpectral2D : Evolution2D = struct
       (List.length (List.hd mat))
 
   let to_list w = (w |> ifft2) (List.length w) (List.length (List.hd w))
+
+  let probabilities w = 
+    w |> to_list |> probs
 
   let rec mat_map f mat1 = 
     match mat1 with
