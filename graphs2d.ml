@@ -423,7 +423,6 @@ let sort_boxes cam b =
     degrees *)
 let rotateX (angle : float) : m =
   let rad = angle *. pi /. 180. in
-  let _ = print_float rad in
   [
     [ 1.; 0.; 0. ];
     [ 0.; cos rad; -1. *. sin rad ];
@@ -588,10 +587,10 @@ let updatecam cam proj key def =
       cam := { !cam with ry = !cam.ry +. 1. };
       proj := camera_proj !cam
   | 'w' ->
-      cam := { !cam with rx = max (!cam.rx +. 1.) 0. };
+      cam := { !cam with rx = min (max (!cam.rx +. 1.) 0.) 90. };
       proj := camera_proj !cam
   | 's' ->
-      cam := { !cam with rx = max (!cam.rx -. 1.) 0. };
+      cam := { !cam with rx = min (max (!cam.rx -. 1.) 0.) 90. };
       proj := camera_proj !cam
   | 'e' ->
       cam := { !cam with s = min (!cam.s *. 1.1) 120. };
