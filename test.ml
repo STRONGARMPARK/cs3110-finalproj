@@ -1,7 +1,6 @@
 open OUnit2
 open Graphs
 open Graphs2d
-
 (* Graph TESTS *)
 
 let print_v_int (v : int * int) =
