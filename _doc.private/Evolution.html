@@ -1,0 +1,146 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Userint.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Index of module types" rel=Appendix href="index_module_types.html">
+<link title="Graphs" rel="Chapter" href="Graphs.html">
+<link title="Authors" rel="Chapter" href="Authors.html">
+<link title="Graphs2d" rel="Chapter" href="Graphs2d.html">
+<link title="Userint" rel="Chapter" href="Userint.html">
+<link title="Evolution" rel="Chapter" href="Evolution.html"><title>Evolution</title>
+</head>
+<body>
+<div class="navbar"><a class="pre" href="Userint.html" title="Userint">Previous</a>
+&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;</div>
+<h1>Module <a href="type_Evolution.html">Evolution</a></h1>
+
+<pre><span id="MODULEEvolution"><span class="keyword">module</span> Evolution</span>: <code class="code">sig</code> <a href="Evolution.html">..</a> <code class="code">end</code></pre><hr width="100%">
+
+<pre><code><span id="TYPEboundary_conditions"><span class="keyword">type</span> <code class="type"></code>boundary_conditions</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTboundary_conditions.Periodic"><span class="constructor">Periodic</span></span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTboundary_conditions.Dirichlet"><span class="constructor">Dirichlet</span></span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTboundary_conditions.Neumann"><span class="constructor">Neumann</span></span> <span class="keyword">of</span> <code class="type">(Stdlib.Complex.t * Stdlib.Complex.t)</code></code></td>
+
+</tr></table>
+
+
+
+<pre><span id="TYPEdomain"><span class="keyword">type</span> <code class="type"></code>domain</span> = <code class="type">float * float</code> </pre>
+
+
+<pre><span id="MODULETYPEEvolution1D"><span class="keyword">module type</span> <a href="Evolution.Evolution1D.html">Evolution1D</a></span> = <code class="code">sig</code> <a href="Evolution.Evolution1D.html">..</a> <code class="code">end</code></pre>
+<pre><span id="VALpi"><span class="keyword">val</span> pi</span> : <code class="type">float</code></pre>
+<pre><span id="VALsplit"><span class="keyword">val</span> split</span> : <code class="type">'a list -> 'a list * 'a list</code></pre><div class="info ">
+<div class="info-desc">
+<p>Helper function for fft. Splits vec into two lists, containing it's
+    elements with even and odd indices, respectively. O(n) efficiency.</p>
+</div>
+</div>
+
+<pre><span id="VALroot_of_unity"><span class="keyword">val</span> root_of_unity</span> : <code class="type">int -> int -> Stdlib.Complex.t</code></pre>
+<pre><span id="VALfft_build"><span class="keyword">val</span> fft_build</span> : <code class="type">Stdlib.Complex.t list -><br>       Stdlib.Complex.t list -> int -> Stdlib.Complex.t list</code></pre>
+<pre><span id="VALfft"><span class="keyword">val</span> fft</span> : <code class="type">Stdlib.Complex.t list -> int -> Stdlib.Complex.t list</code></pre><div class="info ">
+<div class="info-desc">
+<p>Fast fourier transform of vec with n elements. O(nlog(n)) efficiency
+    Precondition: n is a power of 2.</p>
+</div>
+</div>
+
+<pre><span id="VALcswap"><span class="keyword">val</span> cswap</span> : <code class="type">Stdlib.Complex.t -> Stdlib.Complex.t</code></pre>
+<pre><span id="VALifft"><span class="keyword">val</span> ifft</span> : <code class="type">Stdlib.Complex.t list -> int -> Stdlib.Complex.t list</code></pre><div class="info ">
+<div class="info-desc">
+<p>Inverse fast fourier transform of vec with n elements. O(nlog(n))
+    efficiency Precondition: n is a power of 2.</p>
+</div>
+</div>
+
+<pre><span id="VALget_k"><span class="keyword">val</span> get_k</span> : <code class="type">int -> <a href="Evolution.html#TYPEdomain">domain</a> -> Stdlib.Complex.t list</code></pre>
+<pre><span id="VALget_k2"><span class="keyword">val</span> get_k2</span> : <code class="type">int -> <a href="Evolution.html#TYPEdomain">domain</a> -> float list</code></pre>
+<pre><span id="MODULEFreeParticleEvolutionSpectral1D"><span class="keyword">module</span> <a href="Evolution.FreeParticleEvolutionSpectral1D.html">FreeParticleEvolutionSpectral1D</a></span>: <code class="code">sig</code> <a href="Evolution.FreeParticleEvolutionSpectral1D.html">..</a> <code class="code">end</code></pre>
+<pre><span id="VALsecond_derivative"><span class="keyword">val</span> second_derivative</span> : <code class="type">Stdlib.Complex.t array -><br>       <a href="Evolution.html#TYPEboundary_conditions">boundary_conditions</a> -><br>       <a href="Evolution.html#TYPEdomain">domain</a> -> int -> Stdlib.Complex.t array</code></pre>
+<pre><span id="MODULEFreeParticleEvolutionEulers1D"><span class="keyword">module</span> <a href="Evolution.FreeParticleEvolutionEulers1D.html">FreeParticleEvolutionEulers1D</a></span>: <code class="code">sig</code> <a href="Evolution.FreeParticleEvolutionEulers1D.html">..</a> <code class="code">end</code></pre>
+<pre><span id="VALget_x"><span class="keyword">val</span> get_x</span> : <code class="type">int -> <a href="Evolution.html#TYPEdomain">domain</a> -> float array</code></pre>
+<pre><span id="VALget_x2"><span class="keyword">val</span> get_x2</span> : <code class="type">int -> <a href="Evolution.html#TYPEdomain">domain</a> -> float array</code></pre>
+<pre><span id="MODULEHarmonicOscillatorEvolutionEulers1D"><span class="keyword">module</span> <a href="Evolution.HarmonicOscillatorEvolutionEulers1D.html">HarmonicOscillatorEvolutionEulers1D</a></span>: <code class="code">sig</code> <a href="Evolution.HarmonicOscillatorEvolutionEulers1D.html">..</a> <code class="code">end</code></pre>
+<pre><span id="TYPEdomain2d"><span class="keyword">type</span> <code class="type"></code>domain2d</span> = <code class="type"><a href="Evolution.html#TYPEdomain">domain</a> * <a href="Evolution.html#TYPEdomain">domain</a></code> </pre>
+
+
+<pre><span id="MODULETYPEEvolution2D"><span class="keyword">module type</span> <a href="Evolution.Evolution2D.html">Evolution2D</a></span> = <code class="code">sig</code> <a href="Evolution.Evolution2D.html">..</a> <code class="code">end</code></pre>
+<pre><span id="VALtranspose"><span class="keyword">val</span> transpose</span> : <code class="type">'a list list -> 'a list list</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">transpose mat</code> returns the matrix transpose of the 2d list mat</p>
+</div>
+</div>
+
+<pre><span id="VALcol_map"><span class="keyword">val</span> col_map</span> : <code class="type">('a -> 'b) -> 'a list -> 'b list</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">col_map f mat</code> returns mat with each column of mat replaced with
+  the function f applied to that column. f therefore must take in an 'a list
+  and returns a 'b list of the same length.</p>
+</div>
+</div>
+
+<pre><span id="VALrow_map"><span class="keyword">val</span> row_map</span> : <code class="type">('a list -> 'b list) -> 'a list list -> 'b list list</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">row_map f mat</code> returns mat with each row of mat replaced with
+  the function f applied to that column. f therefore must take in an 'a list
+  and returns a 'b list of the same length.</p>
+</div>
+</div>
+
+<pre><span id="VALre_fft"><span class="keyword">val</span> re_fft</span> : <code class="type">int -> Stdlib.Complex.t list -> Stdlib.Complex.t list</code></pre><div class="info ">
+<div class="info-desc">
+<p>Fast fourier transform of the 2d list mat, with each dimension having 
+    n elements.
+    Precondition: n is a power of 2</p>
+</div>
+</div>
+
+<pre><span id="VALre_ifft"><span class="keyword">val</span> re_ifft</span> : <code class="type">int -> Stdlib.Complex.t list -> Stdlib.Complex.t list</code></pre>
+<pre><span id="VALfft2"><span class="keyword">val</span> fft2</span> : <code class="type">Stdlib.Complex.t list list -> int -> int -> Stdlib.Complex.t list list</code></pre>
+<pre><span id="VALifft2"><span class="keyword">val</span> ifft2</span> : <code class="type">Stdlib.Complex.t list list -> int -> int -> Stdlib.Complex.t list list</code></pre><div class="info ">
+<div class="info-desc">
+<p>Inverse fast fourier transform of the 2d list mat, with each
+    dimension having n elements. Precondition: n is a power of 2</p>
+</div>
+</div>
+
+<pre><span id="VALbuild_k2"><span class="keyword">val</span> build_k2</span> : <code class="type">float list -> float list -> float list list</code></pre>
+<pre><span id="VALget_k2_2d"><span class="keyword">val</span> get_k2_2d</span> : <code class="type">int -> int -> <a href="Evolution.html#TYPEdomain2d">domain2d</a> -> float list list</code></pre>
+<pre><span id="VALprobabilites1d"><span class="keyword">val</span> probabilites1d</span> : <code class="type">Stdlib.Complex.t list -> float list</code></pre>
+<pre><span id="VALprobs"><span class="keyword">val</span> probs</span> : <code class="type">Stdlib.Complex.t list list -> float list list</code></pre>
+<pre><span id="MODULEFreeParticleEvolutionSpectral2D"><span class="keyword">module</span> <a href="Evolution.FreeParticleEvolutionSpectral2D.html">FreeParticleEvolutionSpectral2D</a></span>: <code class="code">sig</code> <a href="Evolution.FreeParticleEvolutionSpectral2D.html">..</a> <code class="code">end</code></pre>
+<pre><span id="VALsecond_derivative_2d"><span class="keyword">val</span> second_derivative_2d</span> : <code class="type">Stdlib.Complex.t array array -><br>       <a href="Evolution.html#TYPEboundary_conditions">boundary_conditions</a> -><br>       <a href="Evolution.html#TYPEdomain2d">domain2d</a> -> int -> int -> bool -> Stdlib.Complex.t array array</code></pre>
+<pre><span id="VALder_mapper"><span class="keyword">val</span> der_mapper</span> : <code class="type">Stdlib.Complex.t array array -><br>       float -> int -> int -> Stdlib.Complex.t array array</code></pre>
+<pre><span id="VALsquare_mapper"><span class="keyword">val</span> square_mapper</span> : <code class="type">float array -> float -> Stdlib.Complex.t array</code></pre>
+<pre><span id="VALadder"><span class="keyword">val</span> adder</span> : <code class="type">Stdlib.Complex.t array array -><br>       Stdlib.Complex.t array array -> int -> int -> Stdlib.Complex.t array array</code></pre>
+<pre><span id="VALarr2d_to_lst2d"><span class="keyword">val</span> arr2d_to_lst2d</span> : <code class="type">'a array array -> 'a list list</code></pre>
+<pre><span id="VALlst2d_to_arr2d"><span class="keyword">val</span> lst2d_to_arr2d</span> : <code class="type">Stdlib.Complex.t list list -> Stdlib.Complex.t array array</code></pre>
+<pre><span id="MODULEFreeParticleEvolutionEulers2D"><span class="keyword">module</span> <a href="Evolution.FreeParticleEvolutionEulers2D.html">FreeParticleEvolutionEulers2D</a></span>: <code class="code">sig</code> <a href="Evolution.FreeParticleEvolutionEulers2D.html">..</a> <code class="code">end</code></pre>
+<pre><span id="MODULEHarmonicOscillatorEvolutionEulers2D"><span class="keyword">module</span> <a href="Evolution.HarmonicOscillatorEvolutionEulers2D.html">HarmonicOscillatorEvolutionEulers2D</a></span>: <code class="code">sig</code> <a href="Evolution.HarmonicOscillatorEvolutionEulers2D.html">..</a> <code class="code">end</code></pre></body></html>
