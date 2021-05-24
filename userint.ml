@@ -599,7 +599,7 @@ and initial_function_two_dimension dimension solver domain =
     | "b" -> initial_function_two_dimension dimension solver domain
     | "d" ->
         if !num_columns < 4 then begin
-          print_endline "\nYou need to input more columns!";
+          print_string "\nYou need to input at least "; print_int (4 - !num_columns); print_string " more columns!";
           print_second := false;
           print_endline "\n";
           print_string "> "
@@ -613,7 +613,7 @@ and initial_function_two_dimension dimension solver domain =
           with Failure x -> [ 0.0 ]
         in
         let length = List.length list_verse in
-        if length <> !required_num_in_columns then begin print_endline "this ran!"; print_second := true end 
+        if length <> !required_num_in_columns then begin print_second := true end 
         else
           let complex_verse = to_complex_list list_verse [] in
           initial_condition := complex_verse :: !initial_condition;
