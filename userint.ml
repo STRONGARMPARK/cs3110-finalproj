@@ -2,15 +2,17 @@ open Graphs
 open Evolution
 module GrapherFPS1d = Graphs.Make (FreeParticleEvolutionSpectral1D)
 module GrapherFPE1d = Graphs.Make (FreeParticleEvolutionEulers1D)
-module GrapherHOE = Graphs.Make (HarmonicOscillatorEvolutionEulers1D)
+module GrapherHOE1d = Graphs.Make (HarmonicOscillatorEvolutionEulers1D)
 module GrapherFPS2d = Graphs2d.Make (FreeParticleEvolutionSpectral2D)
 module GrapherFPE2d = Graphs2d.Make (FreeParticleEvolutionEulers2D)
-module GrapherHOE2d = Graphs2d.Make (HarmonicOscillatorEvolutionEulers2D)
+module GrapherHOE2d = Graphs2d.Make (HarmonicOscillatorEvolutionEulers2D) 
+
 
 (**[print_thank_you x] just prints the message "Thank you for using our 
 application!"*)
 let rec print_thank_you x =
   print_endline "Thank you for using our application!"
+
 
 (**[print_initial_condition_helper_2d lst] takes in a two dimensional list
 of complex numbers and prints the first column. This is made to account for 
@@ -38,7 +40,7 @@ and print_initial_condition_helper lst number acc =
           print_initial_condition_helper xs (number + 1)
             (acc ^ "(" ^ real ^ "+ i" ^ imaginary ^ ")" ^ ", "))
 
-(**[print_user_preference_2d dimension solver odmain initial_condition 
+(**[print_user_preference_2d dimension solver domain initial_condition 
 boundary_condition print_boundary print_neumann] has essentially the same 
 job as the one dimensional printer, except it has to do everything for 2 
 dimensions. For example, the domain is 2 dimensional, and so is the 
@@ -89,7 +91,10 @@ everything.*)
 and print_user_preference_1d dimension solver domain initial_condition boundary_condition print_boundary print_neumann =
   begin 
     let _ = 
-      print_endline "Dimensions: 1"; in 
+      match dimension with 
+      | 1 -> print_endline "Dimensions: 1"; 
+      | 2 -> print_endline "Dimensions: 2";
+      | _ -> failwith "not possible" in 
     let _ = match solver with 
     | "fps" -> 
       print_endline "Solver: Free Particle Spectral"; 
@@ -182,7 +187,7 @@ and final_check_1d
           GrapherFPE1d.graph_prob domain initial_condition
             boundary_condition
       | "hoe" ->
-          GrapherHOE.graph_prob domain initial_condition
+          GrapherHOE1d.graph_prob domain initial_condition
             boundary_condition
       | _ -> failwith "not possible")
 
@@ -232,7 +237,7 @@ and neumann_helper dimension solver domain initial_condition =
         let list_verse_string = String.split_on_char ' ' clean_verse in
         let list_verse =
           try List.map float_of_string list_verse_string
-          with Failure x -> [ 1.232323 ]
+          with Failure x -> [ 0.0 ]
         in
         let length = List.length list_verse in
         if length mod 2 = 1 || length < 2 || length > 2 then
@@ -270,7 +275,7 @@ and neumann_helper dimension solver domain initial_condition =
         let list_verse_string = String.split_on_char ' ' clean_verse in
         let list_verse =
           try List.map float_of_string list_verse_string
-          with Failure x -> [ 1.232323 ]
+          with Failure x -> [ 0.0 ]
         in
         let length = List.length list_verse in
         if length mod 2 = 1 || length < 2 || length > 2 then
@@ -285,7 +290,7 @@ and neumann_helper dimension solver domain initial_condition =
   final_check_1d dimension solver domain initial_condition
     (Neumann (!neumann_first, !neumann_second))
 
-(**[boundary_conditions_two_dimension dimensino solver domain 
+(**[boundary_conditions_two_dimension dimension solver domain 
 initial_condition] takes the dimension, solver, domain and initial_condition 
 of a 2 dimensional solving run. It assumes validitiy of all other parameters
 which is guaranteed by all functions that are passed to it. It is 
@@ -464,7 +469,7 @@ and initial_function_one_dimension dimension solver domain =
         let list_verse_string = String.split_on_char ' ' clean_verse in
         let list_verse =
           try List.map float_of_string list_verse_string
-          with Failure x -> [ 1.2232323 ]
+          with Failure x -> [ 0.0 ]
         in
         let length = List.length list_verse in
         if length mod 2 = 1 then print := true
@@ -509,7 +514,7 @@ and initial_function_two_dimension dimension solver domain =
     "\n\n\n\
      Because we are working in 2 dimensions, the initial condition has \
      to be 2 dimensional as well. Therefore, the first set of numbers \
-     you will enter will be the first column of the matrix\n";
+     you will enter will be the first column of the matrix.\n";
   print_endline
     "\n\
      For example, if you typed, '1 2 3 4 5 6 7 8' then the first \
@@ -551,7 +556,7 @@ and initial_function_two_dimension dimension solver domain =
         let list_verse_string = String.split_on_char ' ' clean_verse in
         let list_verse =
           try List.map float_of_string list_verse_string
-          with Failure x -> [ 1.2232323 ]
+          with Failure x -> [ 0.0 ]
         in
         let length = List.length list_verse in
         if length mod 2 = 1 then print_first := true
@@ -605,10 +610,10 @@ and initial_function_two_dimension dimension solver domain =
         let list_verse_string = String.split_on_char ' ' clean_verse in
         let list_verse =
           try List.map float_of_string list_verse_string
-          with Failure x -> [ 1.2232323 ]
+          with Failure x -> [ 0.0 ]
         in
         let length = List.length list_verse in
-        if length <> !required_num_in_columns then print_second := true
+        if length <> !required_num_in_columns then begin print_endline "this ran!"; print_second := true end 
         else
           let complex_verse = to_complex_list list_verse [] in
           initial_condition := complex_verse :: !initial_condition;
