@@ -696,6 +696,7 @@ functor
       let _ = draw_text_xy "E - ZOOM IN" 5 (size_y () - 90) in
       let _ = draw_text_xy "Q - ZOOM OUT" 5 (size_y () - 105) in
       let _ = set_color black in
+      let _ = remember_mode true in
 
       let xdomain = fst domain2d in
       let xnum = List.length initial_condition in
