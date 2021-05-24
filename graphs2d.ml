@@ -144,10 +144,10 @@ let print_v3 (v3 : v3) =
 let print_c (c : c) =
   print_string "( r = ";
   print_float c.r;
-  print_string " , b = ";
-  print_float c.b;
   print_string " , g = ";
   print_float c.g;
+  print_string " , b = ";
+  print_float c.b;
   print_string " )";
   ()
 
@@ -173,7 +173,7 @@ let print_box (b : box) =
   ()
 
 (** [check m] checks if m is a valid matrix. A valid matrix is
-    rectangle, so has the same number of columns for each row, and the
+    rectangle, so has the same number of columns for each row, or the
     same number of rows for each column. *)
 
 let check (m : m) : m =
@@ -423,6 +423,7 @@ let sort_boxes cam b =
     degrees *)
 let rotateX (angle : float) : m =
   let rad = angle *. pi /. 180. in
+  let _ = print_float rad in
   [
     [ 1.; 0.; 0. ];
     [ 0.; cos rad; -1. *. sin rad ];

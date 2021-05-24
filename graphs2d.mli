@@ -2,15 +2,32 @@ open Evolution
 
 exception NotAMatrix of string
 
-type m
+type m = float list list
 
-type v
+type v = float list
 
-type v3
+type v3 = {
+  x : float;
+  y : float;
+  z : float;
+}
 
-type c
+type c = {
+  r : float;
+  g : float;
+  b : float;
+}
 
-type box
+type box = {
+  v1 : v3;
+  v2 : v3;
+  v3 : v3;
+  v4 : v3;
+  v5 : v3;
+  v6 : v3;
+  v7 : v3;
+  v8 : v3;
+}
 
 (** [int_to_c i] take an integer [i] and returns a color type [c] with
     red, green and blue values *)
@@ -63,7 +80,7 @@ val v3_to_v : v3 -> v
 val v_to_v3 : v -> v3
 
 (** [check m] checks if m is a valid matrix. A valid matrix is
-    rectangle, so has the same number of columns for each row, and the
+    rectangle, so has the same number of columns for each row, or the
     same number of rows for each column. *)
 val check : m -> m
 
