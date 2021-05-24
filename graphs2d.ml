@@ -289,8 +289,8 @@ let box_map (f : v3 -> v3) (b : box) : box =
     v8 = f b.v8;
   }
 
-(** [box_fold_left f init b] is f (... (f (f init v1) v2) ...) v8] where
-    v1...v8 are vertices in box [b] *)
+(** [box_fold_left f init b] is f (... (f (f init v1) v2) ...) v8 where
+v1...v8 are vertices in box [b] *)
 let box_fold_left (f : 'a -> v3 -> 'a) (init : 'a) (b : box) : 'a =
   f
     (f (f (f (f (f (f (f init b.v1) b.v2) b.v3) b.v4) b.v5) b.v6) b.v7)

@@ -120,7 +120,7 @@ val box : v3 -> v3 -> box
     seperately *)
 val box_map : (v3 -> v3) -> box -> box
 
-(** [box_fold_left f init b] is f (... (f (f init v1) v2) ...) v8] where
+(** [box_fold_left f init b] is f (... (f (f init v1) v2) ...) v8 where
     v1...v8 are vertices in box [b] *)
 val box_fold_left : ('a -> v3 -> 'a) -> 'a -> box -> 'a
 
