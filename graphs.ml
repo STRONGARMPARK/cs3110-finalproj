@@ -154,7 +154,7 @@ functor
       try
         while true do
           remember_mode false;
-          let key = read_key () in
+          let _ = wait_next_event [ Key_pressed ] in
           synchronize ();
 
           set_color (rgb 0 0 0);
