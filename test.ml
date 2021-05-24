@@ -1,7 +1,25 @@
 open OUnit2
 open Graphs
 open Graphs2d
-(* Graph TESTS *)
+(*
+Testing Plan:
+
+The thing about our project, was that most of our application, and modules
+were not testable in the traditional sense. They didn't return anything
+that we could process. For example, the interface was completely unit-return
+based, and the graphing modules similarly. Therefore, we could not test the 
+majority of the GUI. However, in the process of 3d and 2d graphing, there 
+were a few functions that included mathematical operations with testable 
+return values.  
+
+The modules evolution and userint were not tested because of reasons
+specified above. However, all of Graph and Graph2d modules were tested using
+the glass-box testing approach. 
+
+For the correctness of the system, the only modules and parts of modules 
+that needed testing for correctess, were inside of the mathematical 
+operations that we used in Graph and Graph2d. Therefore, as we have 
+tested all of these modules, the system should be tested and correct.*)
 
 let print_v_int (v : int * int) =
   "( " ^ string_of_int (fst v) ^ " , " ^ string_of_int (snd v) ^ " )"
