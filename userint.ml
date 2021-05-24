@@ -444,7 +444,7 @@ and initial_function_one_dimension dimension solver domain =
      complex values.";
   ANSITerminal.print_string [ ANSITerminal.green ]
     "\n\
-     Formatting works as follows: '1 2 3 4' maps to '1 + 2i', '3 + 4i'";
+     Formatting works as follows: '1 2 3 4 5 6 7 8' maps to '1 + 2i', '3 + 4i', '5 + 6i', '7 + 8i'";
   print_endline "\n";
   print_string "> ";
   let print = ref false in
@@ -495,16 +495,16 @@ and initial_function_one_dimension dimension solver domain =
     trickier. This was because we had to take in a matrix of complex
     numbers with quite a few restrictions as well. The restrictions
     being that first of all they had to be valid complex numbers, second
-    of all we needed for the number of columns to be greater than or
+    of all we needed for the number of rows to be greater than or
     equal to 4 and same for the rows, third of all after the first
-    column was inputed, we needed every other column to obviously have
+    row was inputed, we needed every other row to obviously have
     the same number of elements, and then error handling messages to the
     user for all of these possibilities as well. If the user does not
     input a correct list of complex numbers (i.e. something that isn't
-    even or has less than the required number for a column), the
+    even or has less than the required number for a row), the
     interface will provide helpful hints to the reader. It will even
     tell the user how many elements they hav eot type in for subsequent
-    columns, based on their input for the first column. If all is
+    rows, based on their input for the first row. If all is
     succesful, then this will be passed on to boundary_condition helper
     for two dimensions.*)
 and initial_function_two_dimension dimension solver domain =
@@ -515,15 +515,15 @@ and initial_function_two_dimension dimension solver domain =
     "\n\n\n\
      Because we are working in 2 dimensions, the initial condition has \
      to be 2 dimensional as well. Therefore, the first set of numbers \
-     you will enter will be the first column of the matrix.\n";
+     you will enter will be the first row of the matrix.\n";
   print_endline
     "\n\
      For example, if you typed, '1 2 3 4 5 6 7 8' then the first \
-     column would be (going down) (1 + 2i), (3 + 4i), (5 + 6i), (7 + \
-     8i), keep in mind that each of the columns has to have the same \
+     row would be (going left to right) (1 + 2i), (3 + 4i), (5 + 6i), (7 + \
+     8i), keep in mind that each of the rows has to have the same \
      number of terms.";
   print_endline
-    "After you have typed in your last column that you want and it has \
+    "After you have typed in your last row that you want and it has \
      the right amount of terms and then type 'd' and press enter and \
      you will move on to the next step!";
   print_endline
@@ -534,8 +534,8 @@ and initial_function_two_dimension dimension solver domain =
   let print_second = ref false in
   let finished_first = ref false in
   let finished_second = ref false in
-  let required_num_in_columns = ref 0 in
-  let num_columns = ref 0 in
+  let required_num_in_rows = ref 0 in
+  let num_rows = ref 0 in
   let initial_condition = ref [] in
   while not !finished_first do
     if !print_first then begin
@@ -566,26 +566,26 @@ and initial_function_two_dimension dimension solver domain =
           let complex_verse = to_complex_list list_verse [] in
           initial_condition := complex_verse :: !initial_condition;
           finished_first := true;
-          required_num_in_columns := length;
-          num_columns := 1
+          required_num_in_rows := length;
+          num_rows := 1
   done;
   ANSITerminal.print_string [ ANSITerminal.cyan ]
     "\n\
-     Please input the next column now, remember that it has to have \
-     the same number of complex terms as your first column! When you \
+     Please input the next row now, remember that it has to have \
+     the same number of complex terms as your first row! When you \
      are done press enter, type in 'd' and press enter again!";
   print_endline "\n";
   print_string "> ";
-  while (not !finished_second) || !num_columns < 4 do
+  while (not !finished_second) || !num_rows < 4 do
     if !print_second then begin
       let message =
         "\n\
-         Please enter a valid column, remember that you need to have \
-         the same number of terms in each column, according to your \
-         first column you need to input "
-        ^ string_of_int !required_num_in_columns
+         Please enter a valid row, remember that you need to have \
+         the same number of terms in each row, according to your \
+         first row you need to input "
+        ^ string_of_int !required_num_in_rows
         ^ " terms or in other words "
-        ^ string_of_int (!required_num_in_columns / 2)
+        ^ string_of_int (!required_num_in_rows / 2)
         ^ " more complex numbers"
       in
       ANSITerminal.print_string [ ANSITerminal.red ] message;
@@ -599,8 +599,8 @@ and initial_function_two_dimension dimension solver domain =
         Stdlib.exit 0
     | "b" -> initial_function_two_dimension dimension solver domain
     | "d" ->
-        if !num_columns < 4 then begin
-          print_string "\nYou need to input at least "; print_int (4 - !num_columns); print_string " more columns!";
+        if !num_rows < 4 then begin
+          print_string "\nYou need to input at least "; print_int (4 - !num_rows); print_string " more rows!";
           print_second := false;
           print_endline "\n";
           print_string "> "
@@ -614,11 +614,11 @@ and initial_function_two_dimension dimension solver domain =
           with Failure x -> [ 0.0 ]
         in
         let length = List.length list_verse in
-        if length <> !required_num_in_columns then begin print_second := true end 
+        if length <> !required_num_in_rows then begin print_second := true end 
         else
           let complex_verse = to_complex_list list_verse [] in
           initial_condition := complex_verse :: !initial_condition;
-          num_columns := !num_columns + 1;
+          num_rows := !num_rows + 1;
           print_second := false;
           ANSITerminal.print_string [ ANSITerminal.cyan ]
             "\n\
