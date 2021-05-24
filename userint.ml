@@ -290,7 +290,7 @@ and neumann_helper dimension solver domain initial_condition =
       print_string "> "
     end
     else ();
-    match read_line () with
+    match String.trim (read_line ()) with
     | "q" ->
         print_thank_you 1;
         Stdlib.exit 0
@@ -330,7 +330,7 @@ and neumann_helper dimension solver domain initial_condition =
       print_string "> "
     end
     else ();
-    match read_line () with
+    match String.trim (read_line ()) with
     | "q" ->
         print_thank_you 1;
         Stdlib.exit 0
@@ -394,7 +394,7 @@ and boundary_conditions_two_dimension
       print_string "> "
     end
     else ();
-    match read_line () with
+    match String.trim (read_line ()) with
     | "1" ->
         finished := true;
         boundary_condition := Periodic
@@ -455,7 +455,7 @@ and boundary_conditions_one_dimension
       print_string "> "
     end
     else ();
-    match read_line () with
+    match String.trim (read_line ()) with
     | "1" ->
         finished := true;
         boundary_condition := Periodic
@@ -530,7 +530,7 @@ and initial_function_one_dimension dimension solver domain =
       print_string "> "
     end
     else ();
-    match read_line () with
+    match String.trim (read_line ()) with
     | "q" ->
         print_thank_you 1;
         Stdlib.exit 0
@@ -616,7 +616,7 @@ and initial_function_two_dimension dimension solver domain =
       print_string "> "
     end
     else ();
-    match read_line () with
+    match String.trim (read_line ()) with
     | "q" ->
         print_thank_you 1;
         Stdlib.exit 0
@@ -662,7 +662,7 @@ and initial_function_two_dimension dimension solver domain =
       print_string "> "
     end
     else ();
-    match read_line () with
+    match String.trim (read_line ()) with
     | "q" ->
         print_thank_you 1;
         Stdlib.exit 0
@@ -750,7 +750,7 @@ and domain_one_dimension dimension solver =
       print_string "> "
     end
     else ();
-    let user_input_first = read_line () in
+    let user_input_first = String.trim (read_line ()) in
     match user_input_first with
     | "q" ->
         print_thank_you 1;
@@ -789,7 +789,7 @@ and domain_one_dimension dimension solver =
       print_string "> "
     end
     else ();
-    let user_input_first = read_line () in
+    let user_input_first = String.trim (read_line ()) in
     match user_input_first with
     | "q" ->
         print_thank_you 1;
@@ -872,7 +872,7 @@ and domain_two_dimension dimension solver =
       print_string "> "
     end
     else ();
-    let user_input_first = read_line () in
+    let user_input_first = String.trim (read_line ()) in
     match user_input_first with
     | "q" ->
         print_thank_you 1;
@@ -911,7 +911,7 @@ and domain_two_dimension dimension solver =
       print_string "> "
     end
     else ();
-    let user_input_first = read_line () in
+    let user_input_first = String.trim (read_line ()) in
     match user_input_first with
     | "q" ->
         print_thank_you 1;
@@ -959,7 +959,7 @@ and domain_two_dimension dimension solver =
       print_string "> "
     end
     else ();
-    let user_input_first = read_line () in
+    let user_input_first = String.trim (read_line ()) in
     match user_input_first with
     | "q" ->
         print_thank_you 1;
@@ -998,7 +998,7 @@ and domain_two_dimension dimension solver =
       print_string "> "
     end
     else ();
-    let user_input_first = read_line () in
+    let user_input_first = String.trim (read_line ()) in
     match user_input_first with
     | "q" ->
         print_thank_you 1;
@@ -1076,7 +1076,7 @@ and solver_helper dimension =
       print_string "> "
     end
     else ();
-    match read_line () with
+    match String.trim (read_line ()) with
     | "1" ->
         finished := true;
         solver := "fps"
@@ -1126,7 +1126,7 @@ and dimension_starter x =
       print_string "> "
     end
     else ();
-    match read_line () with
+    match String.trim (read_line ()) with
     | "1" ->
         finished := true;
         dimension := 1
@@ -1162,7 +1162,7 @@ and main () =
     "\nPress enter to begin.\n";
   print_endline "";
   print_string "> ";
-  match read_line () with
+  match String.trim (read_line ()) with
   | exception End_of_file -> ()
   | "q" ->
       print_thank_you 1;
