@@ -6,36 +6,28 @@
 Run "opam install graphics" in the terminal and you should be good to go.
 
 2. Features: 
-    |> 
-    |> 
+    |> We have fully functional interface, graphing, and math for 1d and 2d. 
+    Just run "make go" and you can start our application! Everything else 
+    is pretty much explained in the interface itself or on the graphing screen.
+    Enjoy!
 
 3. Cool examples!
 
 (you don't input the semi colon and you have to press enter to start)
 
-(1) 1; 1; -4; 4; 1 2 3 4 5 6 7 8; 2; 2
+(1 DIMENSION)
+
+(1) 1; 1; -4; 4; 1 2 3 4 5 6 7 8; 2
 (2) 1; 2; -4; 4; 
 
 1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 1 1 2 2 2 3 3 3 2 2 2 1 1 1 2 2 2 3 3 3 3 4 4 4 4 5 5 5 5 5 6 6 6 6 7 7 7 7 67 8 8 8 8 9 9 9 9 9 9 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 3 3 3 3 3 3 3 3 3 3 3 4 4 4 4 4 4 4 4 4 4 4 4 5 5 5 5 5 5 5 5 5 5 5 5 5 6 6 6 6 6 6 6 7 7 7 7 7 7 7 7 8 8 8 8 8 8 8 9 9 9 9 9 9 9 9 9 8 8 8 8 8 8 8 8 7 7 7 7 7 7 6 6 6 6 6 5 5 5 5 5 5 5 4 4 4 4 4 4 4 3 3 3 3 3 3 2 2 2 2 2 2 2 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 7 7 7 7 7 7 7 7 7 7 38 38 38 38 38 38 38 38 27 27 27 27 27 27 27 16 16 16 16 16 16 16 16 48 48 48 48 47 47 47 47 47 58 58 58 58 57 57 57 57 57 57 57 46 46 46 46 46 46 437 37 37 37 37 37 37 37 37 26 26 26 26 26 26 26 37 37 37 37 37 37 47 48 48 48 48 48 48 
 
-2; 2; 
+2;
 
-(3) 1; 3; -5; 5; (above); 3; 1 2; 2 3 
+(2 DIMENSIONS)
+
+(1) 2; 1; -4; 4; -5; 5; {1 2 3 4 5 6 7 8} (no curly brackets); {8 7 6 5 4 3 2 1}; {1 8 7 4 3 5 9 2}; {8 5 4 3 2 1 4 3}; 'd'; 
 
 1 2 3 4 5 6 7 8 
 
-
-
-
-
-
-
-
-
-2
-1
--4
-4
--5
-5
-(1 2 3 4 5 6 7 8) 4x
+(2) 2; 1; 5; 10; 4; 20; {1 2 3 4 5 6 7 8 9 10}; {9 8 7 6 6 6 87 8 7 6}; {1 2 3 4 5 5 8 7 6 7}; {1 2 3 4 5 6 7 8 4 5}; 'd'; (then press q and e to zoom in and out)
