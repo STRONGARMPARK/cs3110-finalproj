@@ -162,6 +162,14 @@ and final_check_2d
             boundary_condition
       | _ -> failwith "not possible")
 
+(**[final_check_1d dimension solver domain initial_condition boundary_condition]
+does exactly what final_check for 2d does, but it adds some functionality. 
+Fro example, because it is one d, the printer is different, and the domain,
+boundary condition, initial_condition are diferent so we have to 
+account for diffeent things. We also have to pass it into different
+modules given the conditions specified by the user. If everything runs
+smoothly then one should expect to be taken to the graphing screen right 
+afterwards and from here they can see their graph evolve!*)
 and final_check_1d
     dimension
     solver
@@ -414,8 +422,12 @@ and boundary_conditions_one_dimension
   | Neumann x ->
       neumann_helper dimension solver domain initial_condition
 
-and to_complex_list list acc =
-  match list with
+(**[to_complex_list lst acc] takes in a list of numbers and, assumes 
+that it is an even list of numbers. From here it converts the list of 
+nubmers into a list of complex numbers. For example, if we had, 
+[1;2;3;4], then this would go to [(1+2i);(3+4i)].*)
+and to_complex_list lst acc =
+  match lst with
   | [] -> acc
   | x :: y :: xs ->
       to_complex_list xs ({ Complex.re = x; im = y } :: acc)
