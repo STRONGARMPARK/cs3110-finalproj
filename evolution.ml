@@ -1,10 +1,13 @@
+(** Type to represent different boundary conditions *)
 type boundary_conditions =
   | Periodic
   | Dirichlet
   | Neumann of (Complex.t * Complex.t)
 
+(** Type to represent 1 dimensional domains *)
 type domain = float * float
 
+(** Signature of all 1D schrodinger equation solvers *)
 module type Evolution1D = sig
   (** Representation type of function *)
   type t
@@ -59,10 +62,12 @@ let split vec =
   in
   splitter vec [] [] 0
 
+(** [root_of_unity n j] returns e^(i*j/n), where i is the imaginary unit *)
 let root_of_unity n j =
   Complex.exp
     { re = 0.; im = -2. *. pi *. Float.of_int j /. Float.of_int n }
 
+(** Helper function for fft - builds the array*)
 let fft_build fft_evens fft_odds n =
   let arr_evens = Array.of_list fft_evens in
   let arr_odds = Array.of_list fft_odds in
@@ -91,6 +96,8 @@ let rec fft (vec : Complex.t list) (n : int) : Complex.t list =
       let fft_odds = fft odds (n / 2) in
       fft_build fft_evens fft_odds n
 
+(** Helper function for ifft. Swaps the real and imaginary part of a 
+    complex number. *)
 let cswap (c : Complex.t) : Complex.t =
   match c with { re = a; im = b } -> { re = b; im = a }
 
@@ -101,6 +108,8 @@ let ifft (vec : Complex.t list) (n : int) : Complex.t list =
   |> List.map cswap
   |> List.map (fun x -> Complex.div x { re = Float.of_int n; im = 0. })
 
+(** Function to get the wavenumbers (1D wavevector) for a given 1D domain 
+    and number of gridpoints. Returns: float list of length n *)
 let get_k (n : int) (d : domain) =
   let l =
     match d with
@@ -118,6 +127,8 @@ let get_k (n : int) (d : domain) =
   done;
   Array.to_list k_new
 
+(** Function to get the square of the wavevector for a given 1D domain
+    and number of gridpoints. Returns: float list of length n*)
 let get_k2 (n : int) (d : domain) = List.map Complex.norm2 (get_k n d)
 
 module FreeParticleEvolutionSpectral1D : Evolution1D = struct
@@ -158,6 +169,9 @@ module FreeParticleEvolutionSpectral1D : Evolution1D = struct
   (*TODO: Implement printing *)
 end
 
+(** Computes the 1D second derivative of an array, based on a finite-difference
+    method. [second_derivative w b d n] returns a Complex.t array of length n,
+    which is the second derivative of w. *)
 let second_derivative
     (w : Complex.t array)
     (b : boundary_conditions)
@@ -224,7 +238,8 @@ module FreeParticleEvolutionEulers1D = struct
     let wxx = second_derivative w b d n in
     Array.map (fun x -> Complex.mul { re = 0.; im = tau /. 2. } x) wxx
     |> (Array.map2 Complex.add) w
-
+  
+  (** Same as step, but mutates the array w instead of returning a new array. *)
   let step_mutate w tau b d n =
     let wxx = second_derivative w b d n in
     for i = 0 to n - 1 do
@@ -246,6 +261,8 @@ module FreeParticleEvolutionEulers1D = struct
     wnew
 end
 
+(** [get_x n d] returns a list of n floats, evenly 
+    spaced between [fst d] and [snd d] *)
 let get_x (n : int) (d : domain) =
   let x = Array.make n 0. in
   match d with
@@ -260,6 +277,7 @@ let get_x (n : int) (d : domain) =
         done;
         x
 
+(** same as get_x, but every element of the returned list is squared *)
 let get_x2 (n : int) (d : domain) =
   let x = get_x n d in
   Array.map (fun y -> y *. y) x
@@ -318,8 +336,10 @@ module HarmonicOscillatorEvolutionEulers1D = struct
     wnew
 end
 
+(** type to represent 2D domains *)
 type domain2d = domain * domain
 
+(** Signature of all 2D Schrodinger equation solvers *)
 module type Evolution2D = sig
   (** Representation type of function *)
   type t
@@ -383,13 +403,12 @@ let rec col_map f mat =
 let row_map f mat = 
   mat |> transpose |> col_map f |> transpose
 
-(** Fast fourier transform of the 2d list mat, with each dimension having 
-    n elements.
-    Precondition: n is a power of 2 *)
 let re_fft n vec = fft vec n
 
 let re_ifft n vec = ifft vec n
 
+(** Fast fourier transform of the n x m matrix (2d list) mat
+    Precondition: n and m are powers of 2 *)
 let fft2 mat n m = mat |> row_map (re_fft n) |> col_map (re_fft m)
 
 (** Inverse fast fourier transform of the 2d list mat, with each
@@ -401,14 +420,19 @@ let ifft2 mat n m =
   |> row_map (re_ifft n)
   |> transpose |> List.rev |> transpose
 
+(** Helper function for get_k2_2d *)
 let rec build_k2 lst1 lst2 = 
   match lst1 with
   |[] -> []
   |h :: t -> (List.map (fun x -> x +. h) lst2) :: (build_k2 t lst2)
 
+(** [get_k2_2d n m d2] returns a matrix corresponding to the x-wavevector 
+    squared plus the y-wavevector squared at each gridpoint. *)
 let get_k2_2d (n : int) (m : int) (d2 : domain2d) =
   build_k2 (get_k2 n (fst d2)) (get_k2 m (snd d2))
 
+(** [probabilities1d vec] returns a lst corresponding to the (complex) magnitude
+    squared of each entry of vec. Helper function of probabilities *)
 let probabilites1d vec = vec |> List.map Complex.norm2
 
 let rec probs mat =
@@ -422,10 +446,12 @@ module FreeParticleEvolutionSpectral2D : Evolution2D = struct
   let dt = 0.01
 
   let boundary_condition = [ Periodic ]
-
+  
+  (** Helper function for normalize *)
   let norm1d vec =
     List.fold_left (fun acc x -> acc +. Complex.norm2 x) 0. vec |> sqrt
-
+  
+  (** Another helper function for normalize *)
   let div1d vec norm =
     List.map (fun x -> Complex.div x { re = norm; im = 0. }) vec
 
@@ -451,12 +477,14 @@ module FreeParticleEvolutionSpectral2D : Evolution2D = struct
 
   let probabilities w = 
     w |> to_list |> probs
-
+  
+  (** Equivalent of List.map, but for 2d lists *)
   let rec mat_map f mat1 = 
     match mat1 with
     |[] -> []
     |h :: t -> (List.map f h) :: (mat_map f t)
   
+  (** Equivalent of List.map2, but for 2d lists *)
   let rec mat_map2 f mat1 mat2 = 
     match mat1 with
     |[] -> []
@@ -482,6 +510,9 @@ module FreeParticleEvolutionSpectral2D : Evolution2D = struct
   (*TODO: Implement printing *)
 end
 
+(** Equivalent of second_derivative for 2d functions (lists). is_x 
+    tells the function whether to take the derivative w.r.t x (if true), 
+    or y (if false) *)
 let second_derivative_2d
     (w : Complex.t array array)
     (b : boundary_conditions)
@@ -556,6 +587,7 @@ let second_derivative_2d
 
     wyy
 
+(** helper function for step computation in 2D Eulers solvers *)
 let der_mapper der tau n m =
   let mapped_der = Array.make n (Array.make m Complex.zero) in
   for i = 0 to n - 1 do
@@ -566,6 +598,7 @@ let der_mapper der tau n m =
   done;
   mapped_der
 
+(** helper function for step computation in 2D Eulers solvers *)
 let square_mapper x2 tau =
   let n = Array.length x2 in
   let mapped_x2 = Array.make n Complex.zero in
@@ -575,6 +608,7 @@ let square_mapper x2 tau =
   done;
   mapped_x2
 
+(** helper function for step computation in 2D Eulers solvers *)
 let adder arr1 arr2 n m =
   let res = Array.make n (Array.make m Complex.zero) in
   for i = 0 to n - 1 do
@@ -584,6 +618,7 @@ let adder arr1 arr2 n m =
   done;
   res
 
+(** [arr2d_to_lst2d arr] converts the 2d array arr to a 2d list *)
 let arr2d_to_lst2d arr =
   let rlst = ref [] in
   let rcol = ref [] in
@@ -596,6 +631,7 @@ let arr2d_to_lst2d arr =
   done;
   List.rev !rlst
 
+(** [lst2d_to_arr2d mat] converts the 2d list mat to a 2d array *)
 let lst2d_to_arr2d mat =
   let arr =
     Array.make_matrix (List.length mat)
@@ -642,7 +678,8 @@ module FreeParticleEvolutionEulers2D : Evolution2D = struct
     let mapped_wxx = der_mapper wxx tau n m in
     let mapped_wyy = der_mapper wyy tau n m in
     adder (adder mapped_wxx mapped_wyy n m) w n m
-
+  
+  (** same as step, but mutates w instead of returning a new array *)
   let step_mutate w tau b d2 n m =
     let wxx = second_derivative_2d w b d2 n m true in
     let wyy = second_derivative_2d w b d2 n m false in
@@ -709,7 +746,8 @@ module HarmonicOscillatorEvolutionEulers2D : Evolution2D = struct
     done;
 
     res
-
+  
+  (** same as step, but mutates w instead of returning a new array *)
   let step_mutate w tau b d2 n m =
     let wxx = second_derivative_2d w b d2 n m true in
     let wyy = second_derivative_2d w b d2 n m false in
