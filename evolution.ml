@@ -151,7 +151,7 @@ module FreeParticleEvolutionSpectral1D : Evolution1D = struct
     let n = List.length w in
     let k2 = get_k2 n d in
     List.map (fun x -> Complex.exp {Complex.re = 0.; im = -0.5 *. tau *. x}) k2
-    |> List.map2 Complex.mul w
+    |> (List.map2 Complex.mul w)
 
   let evolve w tau b d time print =
     step w time b d
@@ -375,7 +375,7 @@ let rec col_map f mat =
   |[] -> []
   |h :: t -> f h :: col_map f t
 
-(** [row_map f mat] returns map with each row of mat replaced with
+(** [row_map f mat] returns mat with each row of mat replaced with
   the function f applied to that column. f therefore must take in an 'a list
   and returns a 'b list of the same length. *)
 let row_map f mat = 
@@ -397,9 +397,13 @@ let ifft2 mat n m =
   |> transpose |> List.rev |> transpose |> row_map (re_ifft n) 
   |> transpose |> List.rev |> transpose
 
+let rec build_k2 lst1 lst2 = 
+  match lst1 with
+  |[] -> []
+  |h :: t -> (List.map (fun x -> x +. h) lst2) :: (build_k2 t lst2)
 
 let get_k2_2d (n : int) (m : int) (d2 : domain2d) =
-  List.map2 (fun x y -> x +. y ) (get_k2 n (fst d2)) (get_k2 m (snd d2))
+  build_k2 (get_k2 n (fst d2)) (get_k2 m (snd d2))
 
 let probabilites1d vec =
   vec |> List.map Complex.norm2
@@ -450,17 +454,30 @@ module FreeParticleEvolutionSpectral2D : Evolution2D = struct
   let probabilities w = 
     w |> to_list |> probs
 
+  let rec mat_map f mat1 = 
+    match mat1 with
+    |[] -> []
+    |h :: t -> (List.map f h) :: (mat_map f t)
+  
+  let rec mat_map2 f mat1 mat2 = 
+    match mat1 with
+    |[] -> []
+    |h :: t -> 
+      match mat2 with
+      |[] -> []
+      |h2 :: t2 -> 
+        (List.map2 f h h2) :: (mat_map2 f t t2)
+
   let step w tau b d2 = 
     if b <> Periodic then 
       raise (Invalid_argument "Illegal boundary condition.");
     let n = List.length w in
     let m = List.length (List.hd w) in
     let k2 = get_k2_2d n m d2 in
-    let f w1d = 
-      List.map (fun x -> Complex.exp {Complex.re = 0.; im = -0.5 *. tau *. x}) k2
-      |> List.map2 Complex.mul w1d
+    let mapped_k2 = 
+      mat_map (fun x -> Complex.exp {Complex.re = 0.; im = -0.5 *. tau *. x}) k2
     in
-    col_map f w
+    mat_map2 Complex.mul w mapped_k2
 
   let evolve w tau b d2 time print =
     step w time b d2
