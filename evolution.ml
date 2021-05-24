@@ -164,9 +164,8 @@ module FreeParticleEvolutionSpectral1D : Evolution1D = struct
     List.map (fun x -> Complex.exp {Complex.re = 0.; im = -0.5 *. tau *. x}) k2
     |> (List.map2 Complex.mul w)
 
-  let evolve w tau b d time print = step w time b d
 
-  (*TODO: Implement printing *)
+  let evolve w tau b d time print = step w time b d
 end
 
 (** Computes the 1D second derivative of an array, based on a finite-difference
@@ -254,7 +253,6 @@ module FreeParticleEvolutionEulers1D = struct
     let wnew = Array.copy w in
     let steps = Float.to_int (Float.ceil (time /. tau)) in
     for i = 0 to steps do
-      (*TODO: Implement printing*)
       step_mutate wnew tau b d n
     done;
 
@@ -329,7 +327,6 @@ module HarmonicOscillatorEvolutionEulers1D = struct
     let wnew = Array.copy w in
     let steps = Float.to_int (Float.ceil (time /. tau)) in
     for i = 0 to steps do
-      (*TODO: Implement printing*)
       step_mutate wnew tau b d n
     done;
 
@@ -507,7 +504,6 @@ module FreeParticleEvolutionSpectral2D : Evolution2D = struct
 
   let evolve w tau b d2 time print = step w time b d2
 
-  (*TODO: Implement printing *)
 end
 
 (** Equivalent of second_derivative for 2d functions (lists). is_x 
@@ -700,7 +696,6 @@ module FreeParticleEvolutionEulers2D : Evolution2D = struct
     let wnew = Array.copy w in
     let steps = Float.to_int (Float.ceil (time /. tau)) in
     for i = 0 to steps do
-      (*TODO: Implement printing*)
       step_mutate wnew tau b d2 n m
     done;
 
@@ -776,7 +771,6 @@ module HarmonicOscillatorEvolutionEulers2D : Evolution2D = struct
     let wnew = Array.copy w in
     let steps = Float.to_int (Float.ceil (time /. tau)) in
     for i = 0 to steps do
-      (*TODO: Implement printing*)
       step_mutate wnew tau b d2 n m
     done;
 

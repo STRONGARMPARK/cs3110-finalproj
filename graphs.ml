@@ -142,6 +142,11 @@ functor
       let _ = draw_text "x" (size_x () - 15) (opy - 15) in
       let _ = draw_text "y" (opx + 10) (size_y () - 15) in
 
+      let _ = remember_mode false in
+      let _ = set_color red in
+      let _ = draw_text "PRESS ANY KEY TO START" 5 (size_y () - 15) in
+      let _ = set_color black in
+
       let t = ref 0. in
       let t_elapsed = ref 0. in
       let w = ref initial_condition in
@@ -149,8 +154,9 @@ functor
       try
         while true do
           remember_mode false;
-          let _ = wait_next_event [ Key_pressed ] in
+          let key = read_key () in
           synchronize ();
+
           set_color (rgb 0 0 0);
 
           let deltat = 0.1 in

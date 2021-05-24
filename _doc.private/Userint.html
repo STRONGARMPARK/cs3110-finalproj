@@ -1,0 +1,264 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Graphs2d.html">
+<link rel="next" href="Evolution.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Index of module types" rel=Appendix href="index_module_types.html">
+<link title="Graphs" rel="Chapter" href="Graphs.html">
+<link title="Authors" rel="Chapter" href="Authors.html">
+<link title="Graphs2d" rel="Chapter" href="Graphs2d.html">
+<link title="Userint" rel="Chapter" href="Userint.html">
+<link title="Evolution" rel="Chapter" href="Evolution.html"><title>Userint</title>
+</head>
+<body>
+<div class="navbar"><a class="pre" href="Graphs2d.html" title="Graphs2d">Previous</a>
+&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;<a class="post" href="Evolution.html" title="Evolution">Next</a>
+</div>
+<h1>Module <a href="type_Userint.html">Userint</a></h1>
+
+<pre><span id="MODULEUserint"><span class="keyword">module</span> Userint</span>: <code class="code">sig</code> <a href="Userint.html">..</a> <code class="code">end</code></pre><hr width="100%">
+
+<pre><span id="MODULEGrapherFPS1d"><span class="keyword">module</span> <a href="Userint.GrapherFPS1d.html">GrapherFPS1d</a></span>: <code class="type"><a href="Graphs.Make.html">Graphs.Make</a></code><code class="code">(</code><code class="type"><a href="Evolution.FreeParticleEvolutionSpectral1D.html">Evolution.FreeParticleEvolutionSpectral1D</a></code><code class="code">)</code></pre>
+<pre><span id="MODULEGrapherFPE1d"><span class="keyword">module</span> <a href="Userint.GrapherFPE1d.html">GrapherFPE1d</a></span>: <code class="type"><a href="Graphs.Make.html">Graphs.Make</a></code><code class="code">(</code><code class="type"><a href="Evolution.FreeParticleEvolutionEulers1D.html">Evolution.FreeParticleEvolutionEulers1D</a></code><code class="code">)</code></pre>
+<pre><span id="MODULEGrapherHOE1d"><span class="keyword">module</span> <a href="Userint.GrapherHOE1d.html">GrapherHOE1d</a></span>: <code class="type"><a href="Graphs.Make.html">Graphs.Make</a></code><code class="code">(</code><code class="type"><a href="Evolution.HarmonicOscillatorEvolutionEulers1D.html">Evolution.HarmonicOscillatorEvolutionEulers1D</a></code><code class="code">)</code></pre>
+<pre><span id="MODULEGrapherFPS2d"><span class="keyword">module</span> <a href="Userint.GrapherFPS2d.html">GrapherFPS2d</a></span>: <code class="type"><a href="Graphs2d.Make.html">Graphs2d.Make</a></code><code class="code">(</code><code class="type"><a href="Evolution.FreeParticleEvolutionSpectral2D.html">Evolution.FreeParticleEvolutionSpectral2D</a></code><code class="code">)</code></pre>
+<pre><span id="MODULEGrapherFPE2d"><span class="keyword">module</span> <a href="Userint.GrapherFPE2d.html">GrapherFPE2d</a></span>: <code class="type"><a href="Graphs2d.Make.html">Graphs2d.Make</a></code><code class="code">(</code><code class="type"><a href="Evolution.FreeParticleEvolutionEulers2D.html">Evolution.FreeParticleEvolutionEulers2D</a></code><code class="code">)</code></pre>
+<pre><span id="MODULEGrapherHOE2d"><span class="keyword">module</span> <a href="Userint.GrapherHOE2d.html">GrapherHOE2d</a></span>: <code class="type"><a href="Graphs2d.Make.html">Graphs2d.Make</a></code><code class="code">(</code><code class="type"><a href="Evolution.HarmonicOscillatorEvolutionEulers2D.html">Evolution.HarmonicOscillatorEvolutionEulers2D</a></code><code class="code">)</code></pre>
+<pre><span id="VALprint_thank_you"><span class="keyword">val</span> print_thank_you</span> : <code class="type">int -> unit</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">print_thank_you x</code> just prints the message "Thank you for using our 
+application!"</p>
+</div>
+</div>
+
+<pre><span id="VALprint_initial_condition_helper_2d"><span class="keyword">val</span> print_initial_condition_helper_2d</span> : <code class="type">Stdlib.Complex.t list list -> string</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">print_initial_condition_helper_2d lst</code> takes in a two dimensional list
+of complex numbers and prints the first column. This is made to account for 
+the differences in printing one and two dimensional initial_conditions.</p>
+</div>
+</div>
+
+<pre><span id="VALprint_initial_condition_helper"><span class="keyword">val</span> print_initial_condition_helper</span> : <code class="type">Stdlib.Complex.t list -> int -> string -> string</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">print_initial_condition_helper lst number acc</code> is just a helper 
+to print the initial condition for one dimension. 
+It takes in a list a number and an accumulator. The list represents the list
+of complex numbers that you want to print, the number represents up to 
+what number you want to print and the accumulator is what stores everything
+that is being printed. This is typically passed in as ""</p>
+</div>
+</div>
+
+<pre><span id="VALprint_user_preference_2d"><span class="keyword">val</span> print_user_preference_2d</span> : <code class="type">int -><br>       string -><br>       <a href="Evolution.html#TYPEdomain2d">Evolution.domain2d</a> -><br>       Stdlib.Complex.t list list -><br>       <a href="Evolution.html#TYPEboundary_conditions">Evolution.boundary_conditions</a> -> bool -> bool -> unit</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">print_user_preference_2d dimension solver domain initial_condition 
+boundary_condition print_boundary print_neumann</code> has essentially the same 
+job as the one dimensional printer, except it has to do everything for 2 
+dimensions. For example, the domain is 2 dimensional, and so is the 
+initial_condition and because of this, it has to be printed differently. 
+We also have a different set of boundary conditions to print for 2 
+2 dimensional stuff which is why we had to make a separate printer 
+for 2 dimensional preferences.</p>
+</div>
+</div>
+
+<pre><span id="VALprint_user_preference_1d"><span class="keyword">val</span> print_user_preference_1d</span> : <code class="type">int -><br>       string -><br>       <a href="Evolution.html#TYPEdomain">Evolution.domain</a> -><br>       Stdlib.Complex.t list -><br>       <a href="Evolution.html#TYPEboundary_conditions">Evolution.boundary_conditions</a> -> bool -> bool -> unit</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">print_user_preference_1d dimension solver domain initial_condition 
+boundary_condition print_boundary print_neumann</code> takes in all of the
+parameters that final_check does, and then also has to take in a couple of 
+extra boundaries to know what to print. Keep in mind that this is
+for 1d so it is different from 2d as the domain has to be printed out 
+differently, the initial condition has to be printed out differently, and 
+the and also it has all three boundary conditions instead of 2. The only other
+non-self explanatory parameters that get passed in are print_boundary and 
+print_neumann which tell the printer whether or not to print the 
+boundary condition or whether or not to print the neumann, because given a 
+certain staget that the user may be at, one possibly does not have to print
+everything.</p>
+</div>
+</div>
+
+<pre><span id="VALfinal_check_2d"><span class="keyword">val</span> final_check_2d</span> : <code class="type">int -><br>       string -><br>       <a href="Evolution.html#TYPEdomain2d">Evolution.domain2d</a> -><br>       Stdlib.Complex.t list list -> <a href="Evolution.html#TYPEboundary_conditions">Evolution.boundary_conditions</a> -> unit</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">final_check_2d dimension solver domain initial_condition 
+boundary_condition</code> takes in as input everything that the 
+user wants to graph, their preferneces that is, and uses the 
+two dimensional printer to print it. It then makes sure that 
+everything is ok and graphs accordingly.</p>
+</div>
+</div>
+
+<pre><span id="VALfinal_check_1d"><span class="keyword">val</span> final_check_1d</span> : <code class="type">int -><br>       string -><br>       <a href="Evolution.html#TYPEdomain">Evolution.domain</a> -><br>       Stdlib.Complex.t list -> <a href="Evolution.html#TYPEboundary_conditions">Evolution.boundary_conditions</a> -> unit</code></pre>
+<pre><span id="VALneumann_helper"><span class="keyword">val</span> neumann_helper</span> : <code class="type">int -> string -> <a href="Evolution.html#TYPEdomain">Evolution.domain</a> -> Stdlib.Complex.t list -> unit</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">neumann_helper dimension solver domain initial_condition</code> takes in
+    the dimension, solver, domain and initial_condition and is used to
+    help with the making of the derivatives at each boundary for neumann
+    for one dimension. Keep in mind that for two dimensions we only have
+    two boundary conditions. As always helpful messages will be printed,
+    and if everything runs smoothly, then they will be taken to the
+    final stage where they can review their options and graph the
+    probability density function.</p>
+</div>
+</div>
+
+<pre><span id="VALboundary_conditions_two_dimension"><span class="keyword">val</span> boundary_conditions_two_dimension</span> : <code class="type">int -> string -> <a href="Evolution.html#TYPEdomain2d">Evolution.domain2d</a> -> Stdlib.Complex.t list list -> unit</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">boundary_conditions_two_dimension dimension solver domain 
+initial_condition</code> takes the dimension, solver, domain and initial_condition 
+of a 2 dimensional solving run. It assumes validitiy of all other parameters
+which is guaranteed by all functions that are passed to it. It is 
+different form the one dimension boundary condition handler as there 
+the domain and initial condition are multi dimensional now. There is 
+also no Neumann for two dimensions.</p>
+</div>
+</div>
+
+<pre><span id="VALboundary_conditions_one_dimension"><span class="keyword">val</span> boundary_conditions_one_dimension</span> : <code class="type">int -> string -> <a href="Evolution.html#TYPEdomain">Evolution.domain</a> -> Stdlib.Complex.t list -> unit</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">boundary_conditions_one_dimension dimension solver domain
+  initial_condition</code>
+    takes in all of the variables that have been listed, and like the
+    solver helper, gives the user a list to choose from as to what
+    boundary condition they want. A tricky part about this is that if
+    they chose the Neumann boundary condition, then they would actulaly
+    have to be taken to a different helper as Neumann requires a bit of
+    an actual initial_condition to represent the derivatives at the
+    boundaries.</p>
+</div>
+</div>
+
+<pre><span id="VALto_complex_list"><span class="keyword">val</span> to_complex_list</span> : <code class="type">float list -> Stdlib.Complex.t list -> Stdlib.Complex.t list</code></pre>
+<pre><span id="VALinitial_function_one_dimension"><span class="keyword">val</span> initial_function_one_dimension</span> : <code class="type">int -> string -> <a href="Evolution.html#TYPEdomain">Evolution.domain</a> -> unit</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">initial_function_one_dimension dimension solver domain</code> does
+    exactly what one would expect it to gien the name. It takes in a
+    dimension, solver, and domain, and gives users instructions to inptu
+    their initial_function or a series of complex numbers. It will also
+    give helpful hints if the user ever does something that is against
+    what our back-end can handle. From here, if everything goes
+    succesfully, this will be passed onto the boundary condition helper
+    for one dimension with the given dimension solver and domain, and
+    now also with the initial function which is just a list of complex
+    numbers. Another thing we had to watch out for is that if they gave
+    they chose the Free Particle Euler's solver, then we would have to
+    take them straight to the grapher with Periodic as their
+    boundary_condition.</p>
+</div>
+</div>
+
+<pre><span id="VALinitial_function_two_dimension"><span class="keyword">val</span> initial_function_two_dimension</span> : <code class="type">int -> string -> <a href="Evolution.html#TYPEdomain2d">Evolution.domain2d</a> -> unit</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">initial_function_two_dimension dimension solver domain</code> does
+    exactly what it sounds like it does, which is it takes in the
+    dimension, solver, and domain, which as preconditions should be
+    valid as error handling should be done by previous functions. The
+    working of the initial_function for two dimensions was a little bit
+    trickier. This was because we had to take in a matrix of complex
+    numbers with quite a few restrictions as well. The restrictions
+    being that first of all they had to be valid complex numbers, second
+    of all we needed for the number of columns to be greater than or
+    equal to 4 and same for the rows, third of all after the first
+    column was inputed, we needed every other column to obviously have
+    the same number of elements, and then error handling messages to the
+    user for all of these possibilities as well. If the user does not
+    input a correct list of complex numbers (i.e. something that isn't
+    even or has less than the required number for a column), the
+    interface will provide helpful hints to the reader. It will even
+    tell the user how many elements they hav eot type in for subsequent
+    columns, based on their input for the first column. If all is
+    succesful, then this will be passed on to boundary_condition helper
+    for two dimensions.</p>
+</div>
+</div>
+
+<pre><span id="VALdomain_one_dimension"><span class="keyword">val</span> domain_one_dimension</span> : <code class="type">int -> string -> unit</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">domain_one_dimension dimension solver</code> does exactly what the two
+    dimensional counterpart does, but instead with the idea that it is
+    solving in one dimension. Again there are quite a few things that we
+    have to account for here. Number one is the fact that again the left
+    bound has to be less than the right bound. Another thing is that if
+    they chose Harmonic Oscillator as their solver then it has to be
+    symmetric about the origin. However, this actually entails checking
+    2 thing. At first checking that the first boudn is nothing less than
+    or equal to 0, and then making sure that the second one is the
+    positive coutnerpart. Along with this we also have checking for any
+    faulty inputs such as letters or white spaces etc.</p>
+</div>
+</div>
+
+<pre><span id="VALdomain_two_dimension"><span class="keyword">val</span> domain_two_dimension</span> : <code class="type">int -> string -> unit</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">domain_two_dimension dimension solver</code> takes in a dimension that
+    you want to solve in, and the solver that they chose from previous
+    functions. As alwyas it prints out the current prefences the user
+    has chosen. There are quite a few accounting things that we have to
+    take care of for each of the boundaries. Because we are in two
+    dimensions, we actually have ot input 4 numbers instead of 2. One of
+    the things that the interface had to take care of is that the left
+    bound had to be less than the right bound. Another restriction is
+    that if the user chose the Harmonic Oscillator as their solver,
+    their domain has to be symmetric about the origin. Which lead to
+    much more error handling. If all is succesful, then the users
+    preferred domain will be passed on to the two dimensional
+    initial_function handler. Also note that different error messages
+    had to be made and different instructions had to be made dependent
+    on whether they were working on their first domain or second domain.</p>
+</div>
+</div>
+
+<pre><span id="VALsolver_helper"><span class="keyword">val</span> solver_helper</span> : <code class="type">int -> unit</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">solver_helper dimension</code> takes in the dimension that the user chose
+    from the previous function and allows the user to choose from a list
+    of solvers to continue. Also notice that in the beginning, the
+    user's current selected preferences will show up on the screen. If
+    they enter a valid option, then dependent on the dimension that they
+    wanted to solve in, they will either be taken to the
+    domain_one_dimension or domain_two_dimension helper to pick out
+    their domains. There is also of course error handling to help guide
+    the user through the process.</p>
+</div>
+</div>
+
+<pre><span id="VALdimension_starter"><span class="keyword">val</span> dimension_starter</span> : <code class="type">int -> unit</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">dimension_starter x</code> represents the initial starting configuration
+    with no dimension configured yet. If the user types in 'q', the
+    application will quit with a goodbye message and if the user types
+    'b' then the application will go back to the main starting page.
+    This dynamic is similar throughout the solver so we will state it
+    once here for clarity (the only difference being of course what 'b'
+    actually goes back to). Then finally, based on what the user inputs
+    it will take them to the solver_helper function to pick out a
+    solver, except with a different dimension variable. It also has
+    error handling so if the user does not type in a correct dimension
+    (i.e. either 1 or 2), a message will appear telling the user what to
+    actually type in.</p>
+</div>
+</div>
+
+<pre><span id="VALmain"><span class="keyword">val</span> main</span> : <code class="type">unit -> unit</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">main ()</code> is the initial screen for our application. It has
+    instructions of how to quit and go back in our application, and also
+    prompts the user to start the process of selecting their options.
+    Note that if the user tries to go back from this phase by using the
+    command 'b', it will give them a warning saying that they can't go
+    back from here as this is the starting screen.</p>
+</div>
+</div>
+</body></html>

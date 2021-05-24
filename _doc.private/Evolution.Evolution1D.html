@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link rel="next" href="Evolution.Evolution2D.html">
+<link rel="Up" href="Evolution.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Index of module types" rel=Appendix href="index_module_types.html">
+<link title="Graphs" rel="Chapter" href="Graphs.html">
+<link title="Authors" rel="Chapter" href="Authors.html">
+<link title="Graphs2d" rel="Chapter" href="Graphs2d.html">
+<link title="Userint" rel="Chapter" href="Userint.html">
+<link title="Evolution" rel="Chapter" href="Evolution.html"><title>Evolution.Evolution1D</title>
+</head>
+<body>
+<div class="navbar">&nbsp;<a class="up" href="Evolution.html" title="Evolution">Up</a>
+&nbsp;<a class="post" href="Evolution.Evolution2D.html" title="Evolution.Evolution2D">Next</a>
+</div>
+<h1>Module type <a href="type_Evolution.Evolution1D.html">Evolution.Evolution1D</a></h1>
+
+<pre><span id="MODULETYPEEvolution1D"><span class="keyword">module type</span> Evolution1D</span> = <code class="code">sig</code> <a href="Evolution.Evolution1D.html">..</a> <code class="code">end</code></pre><hr width="100%">
+
+<pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> </pre>
+<div class="info ">
+<div class="info-desc">
+<p>Representation type of function</p>
+</div>
+</div>
+
+
+<pre><span id="VALdt"><span class="keyword">val</span> dt</span> : <code class="type">float</code></pre><div class="info ">
+<div class="info-desc">
+<p>Represents maximum timestep value</p>
+</div>
+</div>
+
+<pre><span id="VALboundary_condition"><span class="keyword">val</span> boundary_condition</span> : <code class="type"><a href="Evolution.html#TYPEboundary_conditions">Evolution.boundary_conditions</a> list</code></pre><div class="info ">
+<div class="info-desc">
+<p>List to represent the different allowed kinds of boundary
+      conditions.</p>
+</div>
+</div>
+
+<pre><span id="VALnormalize"><span class="keyword">val</span> normalize</span> : <code class="type">Stdlib.Complex.t list -> Stdlib.Complex.t list</code></pre><div class="info ">
+<div class="info-desc">
+<p>Function to normalize a given vector representation of a wave
+      function</p>
+</div>
+</div>
+
+<pre><span id="VALfrom_list"><span class="keyword">val</span> from_list</span> : <code class="type">Stdlib.Complex.t list -> <a href="Evolution.Evolution1D.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>Function to convert from vector representation of wave function to
+      representation type</p>
+</div>
+</div>
+
+<pre><span id="VALto_list"><span class="keyword">val</span> to_list</span> : <code class="type"><a href="Evolution.Evolution1D.html#TYPEt">t</a> -> Stdlib.Complex.t list</code></pre><div class="info ">
+<div class="info-desc">
+<p>Function to convert from representation type to vector
+      representation of wave function</p>
+</div>
+</div>
+
+<pre><span id="VALprobabilities"><span class="keyword">val</span> probabilities</span> : <code class="type"><a href="Evolution.Evolution1D.html#TYPEt">t</a> -> float list</code></pre><div class="info ">
+<div class="info-desc">
+<p>Function to convert from representation type to vector
+      representation of probability distribution (Psi^dag * Psi)</p>
+</div>
+</div>
+
+<pre><span id="VALstep"><span class="keyword">val</span> step</span> : <code class="type"><a href="Evolution.Evolution1D.html#TYPEt">t</a> -><br>       float -><br>       <a href="Evolution.html#TYPEboundary_conditions">Evolution.boundary_conditions</a> -> <a href="Evolution.html#TYPEdomain">Evolution.domain</a> -> <a href="Evolution.Evolution1D.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>Function to evolve a wavefunction in time for a single timestep.
+      Returns the internal representation of the wavefunction after one
+      timestep</p>
+</div>
+</div>
+
+<pre><span id="VALevolve"><span class="keyword">val</span> evolve</span> : <code class="type"><a href="Evolution.Evolution1D.html#TYPEt">t</a> -><br>       float -><br>       <a href="Evolution.html#TYPEboundary_conditions">Evolution.boundary_conditions</a> -><br>       <a href="Evolution.html#TYPEdomain">Evolution.domain</a> -> float -> bool -> <a href="Evolution.Evolution1D.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>Function to evolve a wavefunction in time for a given time (in
+      seconds). Returns the internal representation of the wavefunction
+      after the last timestep. Boolean argument tells function whether
+      to print each timestep in a file.</p>
+</div>
+</div>
+</body></html>

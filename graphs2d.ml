@@ -289,7 +289,7 @@ let box_map (f : v3 -> v3) (b : box) : box =
     v8 = f b.v8;
   }
 
-(** [box_fold_left f init b] is f (... (f (f init v1) v2) ...) v8] where
+(** [box_fold_left f init b] is f (... (f (f init v1) v2) ...) v8 where
     v1...v8 are vertices in box [b] *)
 let box_fold_left (f : 'a -> v3 -> 'a) (init : 'a) (b : box) : 'a =
   f
@@ -681,6 +681,22 @@ functor
         (initial_condition : Complex.t list list)
         (boundary_condition : Evolution.boundary_conditions) =
       let _ = open_graph ":0 700x700" in
+
+      let _ = remember_mode false in
+      let _ = set_color red in
+      let _ =
+        draw_text_xy "PRESS ANY KEY TO START" 5 (size_y () - 15)
+      in
+      let _ = draw_text_xy "W - ROTATE UP" 5 (size_y () - 30) in
+      let _ = draw_text_xy "S - ROTATE DOWN" 5 (size_y () - 45) in
+      let _ = draw_text_xy "A - ROTATE CLOCKWISE" 5 (size_y () - 60) in
+      let _ =
+        draw_text_xy "D - ROTATE COUNTER-CLOCKWISE" 5 (size_y () - 75)
+      in
+      let _ = draw_text_xy "E - ZOOM IN" 5 (size_y () - 90) in
+      let _ = draw_text_xy "Q - ZOOM OUT" 5 (size_y () - 105) in
+      let _ = set_color black in
+
       let xdomain = fst domain2d in
       let xnum = List.length initial_condition in
       let width = (snd xdomain -. fst xdomain) /. float xnum in
