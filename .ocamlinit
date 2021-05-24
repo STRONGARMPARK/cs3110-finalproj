@@ -1,3 +1,0 @@
-#directory "_build";;
-#load_rec "interp.cmo";;
-open Interp;;
